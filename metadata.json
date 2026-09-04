@@ -1,0 +1,8 @@
+{
+  "name": "GENAI STUDIO",
+  "description": "GENAI STUDIO – Dein Partner für grenzenloses Design, solide Strategie und schnelle KI-Umsetzung.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

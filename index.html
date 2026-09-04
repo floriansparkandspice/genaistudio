@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GENAI STUDIO - Kreativität trifft auf Technologie</title>
+  <meta name="description" content="Entdecke GENAI STUDIO: dein Partner für grenzenloses Design, solide Strategie, schnelle KI-Umsetzung. Wir bringen dein Unternehmen voran. Ohne Umwege, aber dafür mit weltklasse Resultaten.">
+  
+  <!-- Open Graph / Social Media -->
+  <meta property="og:title" content="GENAI STUDIO - Kreativität trifft auf Technologie">
+  <meta property="og:description" content="Entdecke GENAI STUDIO: dein Partner für grenzenloses Design, solide Strategie, schnelle KI-Umsetzung. Wir bringen dein Unternehmen voran. Ohne Umwege, aber dafür mit weltklasse Resultaten.">
+  <meta property="og:type" content="website">
+
+  <!-- Schriften (Open Sans für Text + auswählbare Heading-Schriften) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Favicons -->
+  <link rel="icon" href="/images/favicon.png" sizes="32x32" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="/images/favicon-dark.png" sizes="32x32" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" href="/images/webclip.png">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/style.css">
+  
+  <!-- External Scripts (HubSpot, Lottie & GSAP ScrollTrigger) -->
+  <script type="text/javascript" id="hs-script-loader" async defer src="https://js-eu1.hs-scripts.com/148682533.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body>
+
+  <!-- Floating Navigation -->
+  <header class="navbar" id="site-header">
+    <nav class="nav-container" aria-label="Hauptnavigation">
+      <a href="#home" class="logo-link" aria-label="GENAI STUDIO Home">
+        <svg width="32" height="32" viewBox="0 0 33 33" class="logo-icon" aria-hidden="true">
+          <path d="M28,0H5C2.24,0,0,2.24,0,5v23c0,2.76,2.24,5,5,5h23c2.76,0,5-2.24,5-5V5c0-2.76-2.24-5-5-5ZM29,17c-6.63,0-12,5.37-12,12h-1c0-6.63-5.37-12-12-12v-1c6.63,0,12-5.37,12-12h1c0,6.63,5.37,12,12,12v1Z" fill="currentColor"></path>
+        </svg>
+      </a>
+      <a href="#home" class="nav-btn">Home</a>
+      <a href="#angebot" class="nav-btn">Angebot</a>
+      <a href="#team" class="nav-btn">Team</a>
+      <a href="#kontakt" class="nav-btn nav-btn-highlight">Kontakt</a>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+      <img src="/logos/Genai%20Studio%20Logo%20deepindigo.svg" alt="GENAI STUDIO Logo" class="hero-logo" width="680" height="337">
+    </section>
+
+    <!-- Mission / Intro Section mit nativer Sticky Headline -->
+    <section class="intro-section" id="intro">
+      <div class="sticky-container">
+        <div class="headline-col">
+          <h1 class="main-title">Die Kreativ-<br>maschine.<br>Ohne den ganzen Bullshit.</h1>
+        </div>
+        <div class="content-col">
+          <div class="message-block">
+            <h2>Weltklasse Design.<br>Über alle Grenzen hinweg.</h2>
+          </div>
+          <div class="message-block">
+            <h2>Wir bringen Strategie und Design mit AI zum rocken!</h2>
+          </div>
+          <div class="message-block message-block-animation">
+            <div id="lottie-container" class="lottie-animation" aria-hidden="true"></div>
+            <h2>Human<br>Creativity<br>&amp;<br>Artificial<br>Intelligence</h2>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Angebot Section -->
+    <section id="angebot" class="value-section">
+      <div class="container">
+        <h2 class="value-statement reveal-on-scroll">
+          Grenzenloses Design, solide Strategie, schnelle KI-Umsetzung. 
+          <span class="highlight-text">Wir bringen dein Unternehmen voran.</span> 
+          Ohne Umwege, aber dafür mit weltklasse Resultaten.
+        </h2>
+      </div>
+    </section>
+
+    <!-- Team Section (50% Bild vollflächig links, 50% Content rechts mit 100vh Segmenten) -->
+    <section id="team" class="team-section">
+      
+      <!-- Member: Björn Ischi -->
+      <article class="team-member" id="member-bjoern">
+        <div class="member-image-column">
+          <div class="member-image-sticky">
+            <img src="/images/Björn-2026.jpeg" 
+                 srcset="/images/Björn-2026-p-500.jpeg 500w, /images/Björn-2026-p-800.jpeg 800w, /images/Björn-2026.jpeg 848w" 
+                 sizes="(max-width: 768px) 100vw, 50vw" 
+                 alt="Björn Ischi" 
+                 class="member-photo-full"
+                 loading="lazy" 
+                 width="848" 
+                 height="1060">
+          </div>
+        </div>
+        <div class="member-content-column">
+          <!-- Segment 1: Name und Rolle -->
+          <div class="member-segment member-segment-intro">
+            <div class="member-segment-inner">
+              <h2 class="member-name">Björn Ischi</h2>
+              <h3 class="member-role">Der Architekt der Kreislaufwirtschaft für zukunftsfähige Produkte.</h3>
+            </div>
+          </div>
+          
+          <!-- Segment 2: Highlights / Badge-Liste -->
+          <div class="member-segment member-segment-highlights">
+            <div class="member-segment-inner">
+              <ul class="badge-list">
+                <li>26+ Jahre Berufserfahrung – von der Baustelle bis zum Designstudio</li>
+                <li>First Mover in Circular Design (seit 2010) &amp; Upcycling-Pionier</li>
+                <li>45+ Marktreife Produkte erfolgreich entworfen und lanciert</li>
+                <li>18+ Internationale Design Awards für exzellente Gestaltung</li>
+                <li>Unternehmer aus Leidenschaft: Gründer von 2 GmbHs und 5 Nonprofit-Organisationen</li>
+                <li>Fachexperte für Circular Design an der Berner Fachhochschule (BFH)</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Segment 3: Biografie / Pitch & Background Untertitel & Background Detail-Punkte & LinkedIn Badge -->
+          <div class="member-segment member-segment-details">
+            <div class="member-segment-inner">
+              <p class="member-bio">
+                Ich verbinde die Bodenhaftung eines Bauleiters mit der Vision eines Industrial Designers, um echte Werte in einer zirkulären Welt zu schaffen. Mein Fokus liegt nicht auf kurzlebigen Trends, sondern auf „Fit to Market“-Lösungen, die ökonomisch sinnvoll und ökologisch konsequent sind. Ich gestalte keine Produkte – ich gestalte Kreisläufe.
+              </p>
+              
+              <h4 class="member-subtitle">Mein Background: Vom Bauleiter zum Industrial &amp; Circular Designer.</h4>
+              <ul class="detail-list">
+                <li><strong>Fundament &amp; Bau:</strong> Wurzeln im Baumanagement – dort gelernt, wie Projekte effizient und substanziell realisiert werden.</li>
+                <li><strong>Design &amp; Strategie:</strong> Über 15 Jahre Erfahrung in der Gestaltung marktfähiger Produkte und strategischer Designprozesse.</li>
+                <li><strong>Circular Pioneer:</strong> Seit 2010 einer der ersten Akteure im Bereich Circular Design in der Schweiz; Experte für Upcycling und nachhaltige Wertschöpfung.</li>
+              </ul>
+
+              <a href="https://www.linkedin.com/in/bj%C3%B6rn-ischi/" target="_blank" rel="noopener noreferrer" class="linkedin-link" aria-label="LinkedIn-Profil von Björn Ischi">
+                <img src="/images/LinkedIn_Logo.svg" alt="LinkedIn Profile" class="linkedin-logo" width="128" height="32">
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Member: Florian Baumgartner -->
+      <article class="team-member" id="member-florian">
+        <div class="member-image-column">
+          <div class="member-image-sticky">
+            <img src="/images/gfYrGwJLkCA4wKx_Cucqs_10fe6aff149443b8a35c47dd14bf0dda.jpg" 
+                 srcset="/images/gfYrGwJLkCA4wKx_Cucqs_10fe6aff149443b8a35c47dd14bf0dda-p-500.jpg 500w, /images/gfYrGwJLkCA4wKx_Cucqs_10fe6aff149443b8a35c47dd14bf0dda.jpg 768w" 
+                 sizes="(max-width: 768px) 100vw, 50vw" 
+                 alt="Florian Baumgartner" 
+                 class="member-photo-full"
+                 loading="lazy" 
+                 width="768" 
+                 height="960">
+          </div>
+        </div>
+        <div class="member-content-column">
+          <!-- Segment 1: Name und Rolle -->
+          <div class="member-segment member-segment-intro">
+            <div class="member-segment-inner">
+              <h2 class="member-name">Florian Baumgartner</h2>
+              <h3 class="member-role">Der digitale Innovationshandwerker für Schweizer KMU.</h3>
+            </div>
+          </div>
+
+          <!-- Segment 2: Highlights / Badge-Liste -->
+          <div class="member-segment member-segment-highlights">
+            <div class="member-segment-inner">
+              <ul class="badge-list">
+                <li>Vertiefte Expertise in Design Thinking, Lean Startup und Digitalisierung</li>
+                <li>Hunderte von KMU in ihren Innovationsvorhaben begleitet</li>
+                <li>Unternehmer seit 2010</li>
+                <li>10+ digitale Plattformen aufgebaut</li>
+                <li>2 erfolgreiche Exits</li>
+                <li>2 AGs, 2 GmbHs und 2 Nonprofit-Organisationen gegründet</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Segment 3: Biografie / Pitch & Background Untertitel & Background Detail-Punkte & LinkedIn Badge -->
+          <div class="member-segment member-segment-details">
+            <div class="member-segment-inner">
+              <p class="member-bio">
+                Ich kombiniere Unternehmertum und langjähriges Innovations-Handwerk mit angewandten digitalen Skills, um dein KMU aufs nächste Level zu heben. Mein Ansatz ist radikal pragmatisch: Ich schreibe keine langen Konzepte, sondern baue funktionierende Prozesse.
+              </p>
+
+              <h4 class="member-subtitle">Mein Background: Vom Produkt Design zur digitalen Architektur.</h4>
+              <ul class="detail-list">
+                <li><strong>Corporate &amp; Design:</strong> Wurzeln im Produkt Design in der Volkswagen Konzernforschung und im Volkswagen Design Center, sowie als Creative Director bei der Vetica Group AG.</li>
+                <li><strong>Entrepreneurship:</strong> Gründung diverser Startups.</li>
+                <li><strong>Innovation Consulting:</strong> Seit 2012 Begleitung hunderter von KMU in ihren Innovationsvorhaben.</li>
+              </ul>
+
+              <a href="https://www.linkedin.com/in/florian-baumgartner/" target="_blank" rel="noopener noreferrer" class="linkedin-link" aria-label="LinkedIn-Profil von Florian Baumgartner">
+                <img src="/images/LinkedIn_Logo.svg" alt="LinkedIn Profile" class="linkedin-logo" width="128" height="32">
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Kontakt Section -->
+    <section id="kontakt" class="contact-section">
+      <div class="container reveal-on-scroll">
+        <p class="contact-lead">
+          Keine Warteschleife, kein Vorzimmer.<br>
+          Ruf Björn direkt an.<br>
+          Falls er besetzt ist, meldet er sich zurück. Wir freuen uns auf dein Projekt.
+        </p>
+        <a href="tel:+41792830659" class="phone-link">079 283 06 59</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer mit dezentem Admin-Login unten links -->
+  <footer class="site-footer" id="site-footer">
+    <div class="footer-container">
+      <div class="footer-left" id="footer-admin-slot">
+        <!-- Admin Login Symbol dezent unten links -->
+      </div>
+      <div class="footer-right">
+        <span class="footer-copyright">&copy; 2026 GENAI STUDIO</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Main Application Script (Firebase, Admin CMS, GSAP & Dynamic Renderer) -->
+  <script type="module" src="/src/app.ts"></script>
+</body>
+</html>

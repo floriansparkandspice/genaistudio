@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 160" width="100%" height="100%">
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'IBM Plex Sans', sans-serif" font-weight="900" font-size="78" letter-spacing="-2" fill="#031425">
+    GENAI STUDIO
+  </text>
+  <circle cx="630" cy="55" r="12" fill="#031425"/>
+</svg>
