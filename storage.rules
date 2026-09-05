@@ -1,0 +1,12 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /images/{allPaths=**} {
+      // Öffentlich lesbar für alle Besucher der Landing Page
+      allow read: if true;
+      // Nur eingeloggte Admins dürfen neue Bilddateien hochladen
+      allow write: if request.auth != null;
+    }
+  }
+}

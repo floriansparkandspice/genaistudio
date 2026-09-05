@@ -41,7 +41,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       id: 'bjoern-ischi',
       name: 'Björn Ischi',
       role: 'Der Architekt der Kreislaufwirtschaft für zukunftsfähige Produkte.',
-      imageUrl: '/images/Björn-2026.jpeg',
+      imageUrl: '/images/Bjoern.webp',
       badges: [
         '26+ Jahre Berufserfahrung – von der Baustelle bis zum Designstudio',
         'First Mover in Circular Design (seit 2010) & Upcycling-Pionier',
@@ -75,7 +75,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       id: 'florian-baumgartner',
       name: 'Florian Baumgartner',
       role: 'Der digitale Innovationshandwerker für Schweizer KMU.',
-      imageUrl: '/images/gfYrGwJLkCA4wKx_Cucqs_10fe6aff149443b8a35c47dd14bf0dda.jpg',
+      imageUrl: '/images/Florian.webp',
       badges: [
         'Vertiefte Expertise in Design Thinking, Lean Startup und Digitalisierung',
         'Hunderte von KMU in ihren Innovationsvorhaben begleitet',

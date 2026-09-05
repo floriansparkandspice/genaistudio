@@ -14,6 +14,12 @@ import {
   getDoc,
   onSnapshot,
 } from 'firebase/firestore';
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from 'firebase/storage';
 import { SiteConfig } from './types';
 import { DEFAULT_SITE_CONFIG } from './defaultData';
 
@@ -31,6 +37,32 @@ export const firebaseConfig = {
 export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const storage = getStorage(app);
+
+// Export Storage SDK primitives
+export { ref, uploadBytes, getDownloadURL };
+
+/**
+ * Lädt eine Bilddatei mit dem firebase/storage SDK per ref() und uploadBytes()
+ * in den Ordner 'images/' im Firebase Storage hoch und liefert die Download-URL von getDownloadURL().
+ */
+export async function uploadImageToStorage(
+  file: File,
+  folder: string = 'images'
+): Promise<string> {
+  const timestamp = Date.now();
+  const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const filePath = `${folder}/${timestamp}_${cleanName}`;
+  const storageRef = ref(storage, filePath);
+
+  const metadata = {
+    contentType: file.type || 'image/jpeg',
+  };
+
+  const snapshot = await uploadBytes(storageRef, file, metadata);
+  const downloadUrl = await getDownloadURL(snapshot.ref);
+  return downloadUrl;
+}
 
 // Google Auth Provider (Google Login only)
 export const googleProvider = new GoogleAuthProvider();
@@ -50,14 +82,20 @@ export async function logoutUser(): Promise<void> {
   await signOut(auth);
 }
 
+export interface AdminCheckResult {
+  exists: boolean;
+  data?: any;
+  error?: string;
+}
+
 /**
  * 1. Zentraler Admin-Check nach dem Google-Login:
  * Prüft, ob in der Collection 'admins' ein Dokument existiert,
  * dessen Document-ID genau der E-Mail-Adresse des Nutzers entspricht:
  * db.collection('admins').doc(user.email).get()
  */
-export async function checkIsAdmin(email: string): Promise<{ exists: boolean; data?: any }> {
-  if (!email) return { exists: false };
+export async function checkIsAdmin(email: string): Promise<AdminCheckResult> {
+  if (!email) return { exists: false, error: 'Keine E-Mail-Adresse im Google-Konto gefunden.' };
   try {
     const adminDocRef = doc(db, 'admins', email);
     const adminDocSnap = await getDoc(adminDocRef);
@@ -76,9 +114,13 @@ export async function checkIsAdmin(email: string): Promise<{ exists: boolean; da
     }
 
     return { exists: false };
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Fehler bei der Admin-Prüfung in Firestore (admins/${email}):`, error);
-    return { exists: false };
+    let errorMsg = error?.message || 'Unbekannter Firestore-Fehler';
+    if (error?.code === 'permission-denied') {
+      errorMsg = 'Firestore-Berechtigung verweigert: Sicherheitsregeln blockieren den Lesezugriff auf "admins".';
+    }
+    return { exists: false, error: errorMsg };
   }
 }
 

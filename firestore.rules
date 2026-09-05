@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Hilfsfunktion: Prüft, ob der authentifizierte Benutzer als Admin in der Collection 'admins' existiert
+    function isAdmin() {
+      return request.auth != null && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.token.email)) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.token.email.lower()))
+      );
+    }
+
+    // Collection 'admins':
+    // Jeder eingeloggte Nutzer darf sein eigenes Dokument lesen, um den Admin-Status zu prüfen.
+    // Nur bestehende Admins dürfen weitere Admins anlegen oder ändern.
+    match /admins/{email} {
+      allow read: if request.auth != null && (
+        request.auth.token.email == email ||
+        request.auth.token.email.lower() == email.lower() ||
+        isAdmin()
+      );
+      allow write: if isAdmin();
+    }
+
+    // Website-Konfigurationen (site_settings / settings):
+    // Öffentlich lesbar für alle Besucher der Landing Page.
+    // Nur verifizierte Admins dürfen Änderungen speichern.
+    match /site_settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

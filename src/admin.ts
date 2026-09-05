@@ -10,6 +10,7 @@ import {
 } from './firebase';
 import { applyTheme, renderSegments, renderTeam } from './renderer';
 import { DEFAULT_SITE_CONFIG } from './defaultData';
+import { renderImageUploadComponent, bindImageUploadComponent } from './imageUpload';
 
 export class AdminController {
   private config: SiteConfig;
@@ -45,7 +46,7 @@ export class AdminController {
 
         try {
           if (!user.email) {
-            await this.handleUnauthorized();
+            await this.handleUnauthorized(undefined, 'Keine E-Mail-Adresse im Google-Konto hinterlegt.');
             return;
           }
 
@@ -63,11 +64,11 @@ export class AdminController {
             await this.loadConfigFromCloud();
           } else {
             // doc.exists ist false: Dokument existiert NICHT -> sofort sperren, ausblenden & ausloggen
-            await this.handleUnauthorized();
+            await this.handleUnauthorized(user.email, adminCheck.error);
           }
-        } catch (err) {
+        } catch (err: any) {
           console.error('Fehler bei der Authentifizierungsprüfung:', err);
-          await this.handleUnauthorized();
+          await this.handleUnauthorized(user?.email || undefined, err?.message);
         } finally {
           this.isCheckingAuth = false;
         }
@@ -80,7 +81,7 @@ export class AdminController {
     });
   }
 
-  private async handleUnauthorized() {
+  private async handleUnauthorized(email?: string, reason?: string) {
     // 1. Blende das Admin-Panel sofort aus
     this.closeDrawer();
     const overlay = document.getElementById('admin-drawer-overlay');
@@ -92,9 +93,14 @@ export class AdminController {
     this.isAdmin = false;
     this.updateAuthUi();
 
-    // 2. Zeige Fehlermeldung exakt gemäss Vorgabe:
-    // "Zugriff verweigert: Dein Konto ist nicht als Administrator freigeschaltet."
-    this.showToast('Zugriff verweigert: Dein Konto ist nicht als Administrator freigeschaltet.', 'error');
+    // 2. Zeige aussagekräftige Fehlermeldung:
+    let message = 'Zugriff verweigert: Dein Konto ist nicht als Administrator freigeschaltet.';
+    if (reason) {
+      message = reason;
+    } else if (email) {
+      message = `Zugriff verweigert: Konto '${email}' ist in Firestore ('admins/${email}') nicht als Administrator freigeschaltet.`;
+    }
+    this.showToast(message, 'error');
 
     // 3. Logge den Nutzer sofort wieder über firebase.auth().signOut() aus
     try {
@@ -200,25 +206,18 @@ export class AdminController {
   private bindGlobalEvents() {
     // Login with Google
     document.getElementById('btn-admin-login')?.addEventListener('click', async () => {
+      this.isCheckingAuth = true;
       try {
         const user = await loginWithGoogle();
         if (!user || !user.email) {
-          await this.handleUnauthorized();
+          await this.handleUnauthorized(undefined, 'Keine E-Mail-Adresse im Google-Konto hinterlegt.');
           return;
         }
 
         // 1. Zentraler Admin-Check nach dem Google-Login:
-        // Sobald sich ein Nutzer über den Google Auth Provider anmeldet, nimm seine E-Mail-Adresse (user.email).
-        // Führe eine Firestore-Abfrage aus: Prüfe, ob in der Collection 'admins' ein Dokument existiert,
-        // dessen Document-ID genau der E-Mail-Adresse des Nutzers entspricht:
-        // db.collection('admins').doc(user.email).get()
         const adminCheck = await checkIsAdmin(user.email);
 
         if (adminCheck.exists) {
-          // doc.exists ist true:
-          // 2. UI-Steuerung & Schutz des Admin-Panels:
-          // - Schalte das Admin-Panel sichtbar (z. B. display: block)
-          // - Lade die Brand-Colors, Schriften und Content-Daten aus Firestore, um das Admin-Panel zu befüllen.
           this.currentUser = user;
           this.isAdmin = true;
           this.updateAuthUi();
@@ -226,20 +225,27 @@ export class AdminController {
           this.openDrawer();
           await this.loadConfigFromCloud();
 
-          this.showToast('Erfolgreich als Administrator autorisiert!', 'success');
+          this.showToast(`Erfolgreich autorisiert als ${user.email}!`, 'success');
         } else {
-          // doc.exists ist false:
-          // - Blende das Admin-Panel sofort aus oder lösche es aus dem DOM.
-          // - Zeige eine Fehlermeldung: "Zugriff verweigert: Dein Konto ist nicht als Administrator freigeschaltet."
-          // - Logge den Nutzer sofort wieder über firebase.auth().signOut() aus.
-          await this.handleUnauthorized();
+          await this.handleUnauthorized(user.email, adminCheck.error);
         }
       } catch (err: any) {
         if (err?.code === 'auth/popup-closed-by-user') {
           return;
         }
         console.error('Google Sign-In Error:', err);
-        await this.handleUnauthorized();
+        if (err?.code === 'auth/unauthorized-domain') {
+          this.showToast(
+            `Domain nicht freigeschaltet: Bitte füge "${window.location.hostname}" in der Firebase Console unter "Authentication > Settings > Authorized Domains" hinzu.`,
+            'error'
+          );
+        } else if (err?.code === 'auth/popup-blocked') {
+          this.showToast('Das Anmeldefenster wurde vom Browser blockiert. Bitte Popups erlauben.', 'error');
+        } else {
+          this.showToast(`Fehler beim Google-Login: ${err?.message || err?.code || 'Unbekannter Fehler'}`, 'error');
+        }
+      } finally {
+        this.isCheckingAuth = false;
       }
     });
 
@@ -856,12 +862,22 @@ export class AdminController {
         </div>
 
         <div class="form-group">
-          <label for="member-image">Bild URL</label>
+          ${renderImageUploadComponent({
+            idPrefix: `member-upload-${index}`,
+            currentUrl: member.imageUrl,
+            folder: 'images',
+            targetInputId: 'member-image',
+            label: 'Team-Porträt (Firebase Storage Upload)',
+          })}
+
+          <label for="member-image" style="margin-top: 10px; font-size: 0.8rem; color: var(--steel-silver);">Bild-URL (wird nach Upload automatisch ausgefüllt)</label>
           <input type="text" id="member-image" class="form-input" value="${this.escape(member.imageUrl)}">
           <div class="image-preset-row">
-            <span class="preset-label">Vorlagen:</span>
-            <button type="button" class="btn-preset-img" data-url="/images/Björn-2026.jpeg">Björn</button>
-            <button type="button" class="btn-preset-img" data-url="/images/gfYrGwJLkCA4wKx_Cucqs_10fe6aff149443b8a35c47dd14bf0dda.jpg">Florian</button>
+            <span class="preset-label">Lokale Vorlagen:</span>
+            <button type="button" class="btn-preset-img" data-url="/images/Bjoern.webp">Björn (WebP)</button>
+            <button type="button" class="btn-preset-img" data-url="/images/Florian.webp">Florian (WebP)</button>
+            <button type="button" class="btn-preset-img" data-url="/images/Bjoern.jpeg">Björn (JPEG)</button>
+            <button type="button" class="btn-preset-img" data-url="/images/Florian.jpg">Florian (JPG)</button>
           </div>
         </div>
 
@@ -952,10 +968,36 @@ export class AdminController {
 
     bindSimple('member-name', 'name');
     bindSimple('member-role', 'role');
-    bindSimple('member-image', 'imageUrl');
     bindSimple('member-bio', 'bio');
     bindSimple('member-subtitle', 'subtitle');
     bindSimple('member-linkedin', 'linkedinUrl');
+
+    // Manual input for image URL
+    const memberImgInput = document.getElementById('member-image') as HTMLInputElement | null;
+    memberImgInput?.addEventListener('input', (e) => {
+      const url = (e.target as HTMLInputElement).value;
+      member.imageUrl = url;
+      renderTeam(this.config.team);
+      const previewThumb = document.getElementById(`member-upload-${index}-preview-img`) as HTMLImageElement | null;
+      if (previewThumb) {
+        previewThumb.src = url || '/images/favicon.png';
+      }
+    });
+
+    // Firebase Storage Upload Component binden
+    bindImageUploadComponent({
+      idPrefix: `member-upload-${index}`,
+      folder: 'images',
+      targetInputId: 'member-image',
+      onSuccess: (downloadUrl: string) => {
+        member.imageUrl = downloadUrl;
+        renderTeam(this.config.team);
+        this.showToast('✅ Bild in Firebase Storage hochgeladen & URL übernommen!', 'success');
+      },
+      onError: (err) => {
+        this.showToast(`Upload-Fehler: ${err.message}`, 'error');
+      },
+    });
 
     // Preset Image buttons
     document.querySelectorAll('.btn-preset-img').forEach((btn) => {
@@ -964,6 +1006,10 @@ export class AdminController {
         member.imageUrl = url;
         const input = document.getElementById('member-image') as HTMLInputElement;
         if (input) input.value = url;
+        const previewThumb = document.getElementById(`member-upload-${index}-preview-img`) as HTMLImageElement | null;
+        if (previewThumb) {
+          previewThumb.src = url;
+        }
         renderTeam(this.config.team);
       });
     });
@@ -1062,7 +1108,7 @@ export class AdminController {
       // Re-Check Admin-Whitelist in Firestore
       const adminCheck = await checkIsAdmin(this.currentUser.email);
       if (!adminCheck.exists) {
-        await this.handleUnauthorized();
+        await this.handleUnauthorized(this.currentUser.email, adminCheck.error);
         return;
       }
 
