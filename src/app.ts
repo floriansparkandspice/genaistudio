@@ -1,3 +1,8 @@
+// Automatische Domain-Weiterleitung von ai.studio auf die offizielle Domain
+if (typeof window !== 'undefined' && window.location.hostname.includes('ai.studio')) {
+  window.location.replace('https://genaistudio.one' + window.location.pathname + window.location.search);
+}
+
 import { subscribeToSiteConfig } from './firebase';
 import { applyTheme, renderSegments, renderTeam } from './renderer';
 import { AdminController } from './admin';

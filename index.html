@@ -2,6 +2,11 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
+  <script>
+    if (window.location && window.location.hostname && window.location.hostname.includes('ai.studio')) {
+      window.location.replace('https://genaistudio.one' + window.location.pathname + window.location.search);
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GENAI STUDIO - Kreativität trifft auf Technologie</title>
   <meta name="description" content="Entdecke GENAI STUDIO: dein Partner für grenzenloses Design, solide Strategie, schnelle KI-Umsetzung. Wir bringen dein Unternehmen voran. Ohne Umwege, aber dafür mit weltklasse Resultaten.">
