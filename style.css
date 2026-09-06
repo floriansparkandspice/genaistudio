@@ -171,7 +171,10 @@ h4 {
 /* Hero Section */
 .hero-section {
   background-color: var(--radioactive-lime);
+  height: 100vh;
+  height: 100dvh;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -180,6 +183,7 @@ h4 {
   text-align: center;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 @keyframes heroLogoEntrance {
@@ -656,6 +660,30 @@ h4 {
 }
 
 @media (max-width: 768px) {
+  .hero-section {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    padding: 24px 20px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-logo {
+    width: 65%;
+    max-width: 260px;
+    max-height: 30vh;
+    max-height: 30dvh;
+    height: auto;
+    object-fit: contain;
+  }
+
   .main-title {
     font-size: clamp(2rem, 7vw, calc(var(--font-size-h1, 56px) * 0.75));
   }
@@ -714,6 +742,23 @@ h4 {
 }
 
 @media (max-width: 600px) {
+  .hero-section {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    padding: 20px 16px;
+  }
+
+  .hero-logo {
+    width: 60%;
+    max-width: 220px;
+    max-height: 25vh;
+    max-height: 25dvh;
+  }
+
   .intro-section {
     padding: 80px 16px;
   }

@@ -70,19 +70,23 @@ export function renderSegments(config: SiteConfig): void {
     mainTitleEl.innerHTML = escapeHtml(seg.intro.mainTitle).replace(/\n/g, '<br>');
   }
 
-  const block1Heading = document.querySelector('#story-block-1 h2');
+  const block1Heading = document.querySelector('#story-block-1 h2, .intro-section .content-col .message-block:nth-of-type(1) h2');
   if (block1Heading) {
     block1Heading.innerHTML = escapeHtml(seg.intro.block1).replace(/\n/g, '<br>');
   }
 
-  const block2Heading = document.querySelector('#story-block-2 h2');
+  const block2Heading = document.querySelector('#story-block-2 h2, .intro-section .content-col .message-block:nth-of-type(2) h2');
   if (block2Heading) {
     block2Heading.innerHTML = escapeHtml(seg.intro.block2).replace(/\n/g, '<br>');
   }
 
-  const block3Heading = document.querySelector('#story-block-3 h2');
+  const block3Heading = document.querySelector('#story-block-3 h2, .intro-section .content-col .message-block:nth-of-type(3) h2');
   if (block3Heading) {
     block3Heading.innerHTML = escapeHtml(seg.intro.block3).replace(/\n/g, '<br>');
+  }
+
+  if (typeof (window as any).ScrollTrigger !== 'undefined') {
+    (window as any).ScrollTrigger.refresh();
   }
 
   // Angebot
