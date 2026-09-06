@@ -97,7 +97,7 @@ export function renderSegments(config: SiteConfig): void {
   }
   const val2El = document.querySelector('.value-text-2');
   if (val2El) {
-    val2El.innerHTML = `<span class="highlight-text">${escapeHtml(seg.angebot.highlightText || '').replace(/\n/g, '<br>')}</span>`;
+    val2El.innerHTML = escapeHtml(seg.angebot.highlightText || '').replace(/\n/g, '<br>');
   }
   const val3El = document.querySelector('.value-text-3');
   if (val3El) {
@@ -128,7 +128,7 @@ export function renderTeam(team: TeamMember[]): void {
 
   teamSection.innerHTML = team.map((member) => `
     <article class="team-member" id="member-${member.id}">
-      <!-- Linke Seite (50%): Hinterlegtes Foto vollflächig eingepasst, 100vh sticky, kein Radius, kein Schatten -->
+      <!-- Linke Seite (50%): Hinterlegtes Foto vollflächig eingepasst, 100vh sticky/pinned -->
       <div class="member-image-column">
         <div class="member-image-sticky">
           <img src="${member.imageUrl || '/images/Björn-2026.jpeg'}"
@@ -138,10 +138,10 @@ export function renderTeam(team: TeamMember[]): void {
         </div>
       </div>
 
-      <!-- Rechte Seite (50%): Content scrollt nacheinander in 100vh Segmenten hoch -->
+      <!-- Rechte Seite (50%): 3 Segmente nacheinander zentriert eingeblendet (0% -> 100% -> 0%) -->
       <div class="member-content-column">
         
-        <!-- Segment 1 (100vh): Name und Rolle -->
+        <!-- Segment 1: Name und Rolle -->
         <div class="member-segment member-segment-intro">
           <div class="member-segment-inner">
             <h2 class="member-name">${escapeHtml(member.name)}</h2>
@@ -149,7 +149,7 @@ export function renderTeam(team: TeamMember[]): void {
           </div>
         </div>
 
-        <!-- Segment 2 (100vh): Highlights / Badge-Liste -->
+        <!-- Segment 2: Highlights / Badge-Liste -->
         <div class="member-segment member-segment-highlights">
           <div class="member-segment-inner">
             ${member.badges && member.badges.length > 0 ? `
@@ -160,7 +160,7 @@ export function renderTeam(team: TeamMember[]): void {
           </div>
         </div>
 
-        <!-- Segment 3 (100vh): Biografie / Pitch & Background Untertitel & Background Detail-Punkte & LinkedIn Badge -->
+        <!-- Segment 3: Biografie / Pitch & Background Untertitel & Background Detail-Punkte & LinkedIn Badge -->
         <div class="member-segment member-segment-details">
           <div class="member-segment-inner">
             ${member.bio ? `
@@ -191,8 +191,10 @@ export function renderTeam(team: TeamMember[]): void {
     </article>
   `).join('');
 
-  // Re-trigger GSAP ScrollTrigger refresh if available
-  if (typeof (window as any).ScrollTrigger !== 'undefined') {
+  // Re-trigger dynamic team scroll animation triggers
+  if (typeof (window as any).initTeamScrollTriggers === 'function') {
+    (window as any).initTeamScrollTriggers();
+  } else if (typeof (window as any).ScrollTrigger !== 'undefined') {
     (window as any).ScrollTrigger.refresh();
   }
 }

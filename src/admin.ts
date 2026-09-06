@@ -716,7 +716,7 @@ export class AdminController {
           <input type="text" id="seg-angebot-main" class="form-input" value="${this.escape(seg.angebot.mainText)}">
         </div>
         <div class="form-group">
-          <label for="seg-angebot-highlight">Text 2 (Zweite Einblendung – Hervorgehoben)</label>
+          <label for="seg-angebot-highlight">Text 2 (Zweite Einblendung)</label>
           <input type="text" id="seg-angebot-highlight" class="form-input" value="${this.escape(seg.angebot.highlightText)}">
         </div>
         <div class="form-group">

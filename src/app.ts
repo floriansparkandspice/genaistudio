@@ -35,56 +35,50 @@ export function initTeamScrollTriggers() {
     }
   });
 
-  // 1. Fotos der Teammitglieder (links sticky 50%):
-  // Fadet am unteren Bildrand ein (0% -> 100% im Bereich 40%-60%), bleibt während der 3 Segmente auf 100%
-  // und fadet beim Weitergehen nach oben wieder sanft auf 0% zurück.
+  // Team Sektion: Jedes Teammitglied ist wie die Angebot-Sektion 100vh gepinnt.
+  // Die 3 Segmente (1. Name + Rolle, 2. Highlights / Badges, 3. Biografie / Background / LinkedIn)
+  // sind exakt zentriert und blenden nacheinander ein und aus (0% -> 100% -> 0%), ohne Scroll-Bewegung.
   const teamMembers = gsap.utils.toArray('.team-member');
   teamMembers.forEach((member: any) => {
-    const photo = member.querySelector('.member-photo-full');
-    if (!photo) return;
+    const segIntro = member.querySelector('.member-segment-intro');
+    const segHighlights = member.querySelector('.member-segment-highlights');
+    const segDetails = member.querySelector('.member-segment-details');
 
-    const photoTl = gsap.timeline({
+    if (!segIntro || !segHighlights || !segDetails) return;
+
+    gsap.set([segIntro, segHighlights, segDetails], { opacity: 0, pointerEvents: 'none' });
+
+    const memberTl = gsap.timeline({
       scrollTrigger: {
         trigger: member,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: true,
+        start: 'top top',
+        end: '+=240%',
+        pin: true,
+        scrub: 0.5,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
       },
     });
 
-    photoTl
-      .fromTo(photo, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'power1.out' })
-      .to(photo, { opacity: 1, duration: 6, ease: 'none' })
-      .to(photo, { opacity: 0, duration: 1, ease: 'power1.in' });
-  });
-
-  // 2. Content rechts: Jedes Segment (100vh) fadet einzeln ein und aus:
-  // - Am unteren Bildrand Opacity = 0%
-  // - Wenn die Mitte des Segments im Bereich 40%-60% ist: Opacity = 100% (Plateau)
-  // - Am oberen Bildrand wieder zurück auf Opacity = 0%
-  const memberSegments = gsap.utils.toArray('.member-segment');
-  memberSegments.forEach((segment: any) => {
-    const inner = segment.querySelector('.member-segment-inner') || segment;
-
-    const segmentTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: segment,
-        start: 'center bottom',
-        end: 'center top',
-        scrub: true,
-      },
-    });
-
-    segmentTl
-      .fromTo(
-        inner,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 4, ease: 'power1.out' }
-      )
-      .to(inner, { opacity: 1, y: 0, duration: 2, ease: 'none' }) // Plateau 40%-60%
-      .to(inner, { opacity: 0, y: -30, duration: 4, ease: 'power1.in' });
+    memberTl
+      // 1. Name plus Rolle / Titel
+      .to(segIntro, { opacity: 1, duration: 1, ease: 'power1.inOut' })
+      .to(segIntro, { opacity: 1, duration: 1.5 })
+      .to(segIntro, { opacity: 0, duration: 1, ease: 'power1.inOut' })
+      // 2. Highlights / Badgeliste (weisse Schrift, ohne grünen Hintergrund)
+      .to(segHighlights, { opacity: 1, duration: 1, ease: 'power1.inOut' })
+      .to(segHighlights, { opacity: 1, duration: 1.5 })
+      .to(segHighlights, { opacity: 0, duration: 1, ease: 'power1.inOut' })
+      // 3. Biografie / Background / Linkedin
+      .to(segDetails, { opacity: 1, duration: 1, ease: 'power1.inOut' })
+      .set(segDetails, { pointerEvents: 'auto' }, '<')
+      .to(segDetails, { opacity: 1, duration: 1.5 })
+      .to(segDetails, { opacity: 0, duration: 1, ease: 'power1.inOut' })
+      .set(segDetails, { pointerEvents: 'none' });
   });
 }
+
+(window as any).initTeamScrollTriggers = initTeamScrollTriggers;
 
 function initIntroScrollTriggers() {
   if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;

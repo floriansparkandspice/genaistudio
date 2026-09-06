@@ -158,17 +158,6 @@ h4 {
   outline: none;
 }
 
-.nav-btn-highlight {
-  background-color: var(--deep-obsidian);
-  color: var(--radioactive-lime);
-}
-
-.nav-btn-highlight:hover,
-.nav-btn-highlight:focus-visible {
-  background-color: var(--radioactive-lime);
-  color: var(--deep-obsidian);
-}
-
 .nav-admin-group {
   display: inline-flex;
   align-items: center;
@@ -432,17 +421,14 @@ h4 {
 }
 
 .highlight-text {
-  background-color: var(--deep-obsidian);
-  color: var(--radioactive-lime);
-  display: inline-block;
-  padding: 6px 16px;
-  border-radius: 8px;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  margin: 4px 0;
+  color: inherit;
+  background: transparent;
+  display: inline;
+  padding: 0;
+  border-radius: 0;
 }
 
-/* Team Section: 50% Linke Seite (Foto 100vh sticky bis Bildschirm-Mitte, center/center eingemittet), 50% Rechte Seite (100vh Segmente nacheinander) */
+/* Team Section: 50% Linke Seite (Foto 100vh gepinnt), 50% Rechte Seite (100vh gepinnte Stage, 3 Segmente nacheinander zentriert eingeblendet) */
 .team-section {
   width: 100%;
   max-width: 100%;
@@ -458,39 +444,40 @@ h4 {
   display: flex;
   flex-direction: row;
   width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .team-member:last-child {
   border-bottom: none;
 }
 
-/* Linke Seite (50%): Hinterlegtes Foto bis in die Bildschirm-Mitte und 100vh eingepasst, center/center eingemittet, überragt die 50% Grenze nicht, bleibt sticky stehen */
+/* Linke Seite (50%): Hinterlegtes Foto vollflächig bis zur Bildschirmmitte, 100vh gepinnt */
 .member-image-column {
   flex: 0 0 50%;
   width: 50%;
   min-width: 50%;
   max-width: 50%;
-  align-self: stretch;
+  height: 100%;
   position: relative;
   background-color: var(--deep-obsidian);
+  overflow: hidden;
 }
 
 .member-image-sticky {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100vh;
-  height: 100dvh;
+  height: 100%;
+  position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: var(--deep-obsidian);
-  z-index: 5;
 }
 
 .member-photo-full {
@@ -503,54 +490,60 @@ h4 {
   border: none !important;
   filter: none !important;
   display: block;
-  will-change: opacity;
 }
 
-/* Rechte Seite (50%): Content scrollt nacheinander in 100vh Segmenten hoch */
+/* Rechte Seite (50%): Content-Bühne – die 3 Segmente liegen zentriert am selben Ort und blenden nacheinander ein/aus */
 .member-content-column {
   flex: 0 0 50%;
   width: 50%;
   min-width: 50%;
   max-width: 50%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background-color: var(--deep-obsidian);
   position: relative;
-  z-index: 2;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0 clamp(24px, 5vw, 64px);
 }
 
 .member-segment {
-  height: 100vh;
-  height: 100dvh;
-  min-height: 100vh;
-  min-height: 100dvh;
-  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 2 * clamp(24px, 5vw, 64px));
+  max-width: 580px;
+  max-height: 88vh;
+  max-height: 88dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  padding: 40px clamp(24px, 5vw, 72px);
+  align-items: flex-start;
+  padding: 0;
   box-sizing: border-box;
-  position: relative;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
 }
 
 .member-segment-inner {
   width: 100%;
-  max-width: 580px;
   margin: 0 auto;
-  will-change: transform, opacity;
 }
 
-/* Segment 1: Name und Rolle (100vh) */
+/* Segment 1: Name und Rolle */
 .member-segment-intro .member-name,
 .member-name {
   font-family: var(--font-heading);
   font-size: var(--font-size-h3, 44px);
   color: var(--white);
-  line-height: 1.08;
-  margin-bottom: 20px;
+  line-height: 1.1;
+  margin-bottom: 16px;
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 
 .member-segment-intro .member-role,
@@ -563,28 +556,29 @@ h4 {
   margin-bottom: 0;
 }
 
-/* Segment 2: Highlights / Badge-Liste (100vh) */
+/* Segment 2: Highlights / Badge-Liste – NEU: ohne grünen Hintergrund, dafür mit normaler weisser Schrift wie Biographie */
 .member-segment-highlights .badge-list,
 .badge-list {
   list-style: none;
-  background-color: var(--radioactive-lime);
-  color: var(--deep-obsidian);
-  padding: 36px 40px;
-  border-radius: 12px;
+  background: transparent;
+  color: var(--white);
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   font-family: var(--font-body);
   font-size: var(--font-size-body, 17px);
-  font-weight: 600;
-  line-height: 1.5;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
-  margin-bottom: 0;
+  font-weight: 400;
+  line-height: 1.6;
+  box-shadow: none;
 }
 
 .badge-list li {
   position: relative;
   padding-left: 24px;
+  color: var(--white);
 }
 
 .badge-list li::before {
@@ -592,19 +586,19 @@ h4 {
   position: absolute;
   left: 0;
   top: -1px;
-  font-size: 1.4rem;
-  line-height: 1;
-  color: var(--deep-obsidian);
+  font-size: 1.3rem;
+  line-height: 1.3;
+  color: var(--radioactive-lime);
 }
 
-/* Segment 3: Biografie / Pitch & Background Untertitel & Background Detail-Punkte & LinkedIn Badge (100vh) */
+/* Segment 3: Biografie / Pitch & Background Untertitel & Background Detail-Punkte & LinkedIn Badge */
 .member-segment-details .member-bio,
 .member-bio {
   font-family: var(--font-body);
   color: var(--white);
   font-size: var(--font-size-body, 17px);
-  line-height: 1.7;
-  margin-bottom: 28px;
+  line-height: 1.65;
+  margin-bottom: 20px;
 }
 
 .member-segment-details .member-subtitle,
@@ -612,7 +606,7 @@ h4 {
   font-family: var(--font-heading);
   font-size: calc(var(--font-size-subheading, 24px) * 0.88);
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   color: var(--white);
   line-height: 1.35;
 }
@@ -623,11 +617,12 @@ h4 {
   color: var(--white);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-bottom: 32px;
+  gap: 10px;
+  margin-bottom: 24px;
   font-family: var(--font-body);
   font-size: calc(var(--font-size-body, 17px) * 0.94);
-  line-height: 1.6;
+  line-height: 1.55;
+  padding: 0;
 }
 
 .detail-list li {
@@ -799,6 +794,11 @@ h4 {
 
   .team-member {
     flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: hidden;
   }
 
   .member-image-column {
@@ -806,28 +806,61 @@ h4 {
     width: 100%;
     min-width: 100%;
     max-width: 100%;
-    height: 50vh;
+    height: 38vh;
+    height: 38dvh;
   }
 
   .member-image-sticky {
     position: relative;
     top: auto;
     width: 100%;
-    max-width: 100%;
     height: 100%;
   }
 
   .member-content-column {
-    flex: none;
+    flex: 1;
     width: 100%;
     min-width: 100%;
     max-width: 100%;
+    height: 62vh;
+    height: 62dvh;
+    position: relative;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .member-segment {
-    height: auto;
-    min-height: auto;
-    padding: 60px 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 40px);
+    max-height: calc(62dvh - 20px);
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  .badge-list {
+    gap: 10px;
+    font-size: clamp(0.9rem, 3.2vw, 15px);
+  }
+
+  .member-bio {
+    font-size: clamp(0.9rem, 3.2vw, 15px);
+    margin-bottom: 12px;
+  }
+
+  .member-subtitle {
+    font-size: clamp(1rem, 3.5vw, 16px);
+    margin-bottom: 8px;
+  }
+
+  .detail-list {
+    gap: 8px;
+    font-size: clamp(0.85rem, 3vw, 14px);
+    margin-bottom: 16px;
   }
 }
 
