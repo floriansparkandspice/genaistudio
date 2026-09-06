@@ -17,10 +17,8 @@ declare const lottie: any;
 let adminController: AdminController | null = null;
 let gsapInitialized = false;
 
-export function initTeamScrollTriggers() {
-  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-
-  // Clean up any stale team triggers before re-binding
+export function killTeamScrollTriggers() {
+  if (typeof ScrollTrigger === 'undefined') return;
   ScrollTrigger.getAll().forEach((st: any) => {
     const triggerEl = st.trigger;
     if (
@@ -29,15 +27,23 @@ export function initTeamScrollTriggers() {
        triggerEl.classList?.contains('member-segment-inner') ||
        triggerEl.classList?.contains('team-member') ||
        triggerEl.classList?.contains('member-photo-full') ||
-       triggerEl.closest?.('.team-member'))
+       triggerEl.closest?.('.team-member') ||
+       triggerEl.closest?.('#team'))
     ) {
-      st.kill();
+      st.kill(true); // Revert: true entfernt .pin-spacer vollständig aus dem DOM
     }
   });
+}
+
+export function initTeamScrollTriggers() {
+  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+  // Sauberes Aufräumen bestehender Team-Trigger inklusive DOM-Revert
+  killTeamScrollTriggers();
 
   // Team Sektion: Jedes Teammitglied ist wie die Angebot-Sektion 100vh gepinnt.
   // Die 3 Segmente (1. Name + Rolle, 2. Highlights / Badges, 3. Biografie / Background / LinkedIn)
-  // sind exakt zentriert und blenden nacheinander ein und aus (0% -> 100% -> 0%), ohne Scroll-Bewegung.
+  // sind exakt zentriert und blenden nacheinander ein und aus (0% -> 100% -> 0%), ohne vorzeitiges Weiterscrollen.
   const teamMembers = gsap.utils.toArray('.team-member');
   teamMembers.forEach((member: any) => {
     const segIntro = member.querySelector('.member-segment-intro');
@@ -52,9 +58,10 @@ export function initTeamScrollTriggers() {
       scrollTrigger: {
         trigger: member,
         start: 'top top',
-        end: '+=240%',
+        end: '+=300%',
         pin: true,
-        scrub: 0.5,
+        pinSpacing: true,
+        scrub: 0.6,
         anticipatePin: 1,
         invalidateOnRefresh: true,
       },
@@ -63,22 +70,26 @@ export function initTeamScrollTriggers() {
     memberTl
       // 1. Name plus Rolle / Titel
       .to(segIntro, { opacity: 1, duration: 1, ease: 'power1.inOut' })
-      .to(segIntro, { opacity: 1, duration: 1.5 })
+      .to(segIntro, { opacity: 1, duration: 2 })
       .to(segIntro, { opacity: 0, duration: 1, ease: 'power1.inOut' })
       // 2. Highlights / Badgeliste (weisse Schrift, ohne grünen Hintergrund)
       .to(segHighlights, { opacity: 1, duration: 1, ease: 'power1.inOut' })
-      .to(segHighlights, { opacity: 1, duration: 1.5 })
+      .to(segHighlights, { opacity: 1, duration: 2.2 })
       .to(segHighlights, { opacity: 0, duration: 1, ease: 'power1.inOut' })
       // 3. Biografie / Background / Linkedin
       .to(segDetails, { opacity: 1, duration: 1, ease: 'power1.inOut' })
       .set(segDetails, { pointerEvents: 'auto' }, '<')
-      .to(segDetails, { opacity: 1, duration: 1.5 })
+      .to(segDetails, { opacity: 1, duration: 2.2 })
       .to(segDetails, { opacity: 0, duration: 1, ease: 'power1.inOut' })
       .set(segDetails, { pointerEvents: 'none' });
   });
+
+  ScrollTrigger.refresh();
 }
 
+(window as any).killTeamScrollTriggers = killTeamScrollTriggers;
 (window as any).initTeamScrollTriggers = initTeamScrollTriggers;
+(window as any).gsapInitialized = false;
 
 function initIntroScrollTriggers() {
   if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
@@ -174,6 +185,7 @@ function initGsap() {
   if (!gsapInitialized) {
     initIntroScrollTriggers();
     gsapInitialized = true;
+    (window as any).gsapInitialized = true;
   }
 
   // Team 100vh Segmente und Team-Fotos Scrolltelling

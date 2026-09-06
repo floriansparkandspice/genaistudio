@@ -126,6 +126,11 @@ export function renderTeam(team: TeamMember[]): void {
   const teamSection = document.getElementById('team');
   if (!teamSection) return;
 
+  // Vor dem Ersetzen des HTML alte ScrollTrigger sauber mit revert: true aufräumen
+  if (typeof (window as any).killTeamScrollTriggers === 'function') {
+    (window as any).killTeamScrollTriggers();
+  }
+
   teamSection.innerHTML = team.map((member) => `
     <article class="team-member" id="member-${member.id}">
       <!-- Linke Seite (50%): Hinterlegtes Foto vollflächig eingepasst, 100vh sticky/pinned -->
@@ -192,10 +197,8 @@ export function renderTeam(team: TeamMember[]): void {
   `).join('');
 
   // Re-trigger dynamic team scroll animation triggers
-  if (typeof (window as any).initTeamScrollTriggers === 'function') {
+  if (typeof (window as any).initTeamScrollTriggers === 'function' && (window as any).gsapInitialized) {
     (window as any).initTeamScrollTriggers();
-  } else if (typeof (window as any).ScrollTrigger !== 'undefined') {
-    (window as any).ScrollTrigger.refresh();
   }
 }
 
