@@ -20,9 +20,10 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       logoText: 'GENAI STUDIO',
     },
     intro: {
-      mainTitle: 'Die Kreativ-\nmaschine.\nOhne den ganzen Bullshit.',
-      block1: 'Weltklasse Design.\nÜber alle Grenzen hinweg.',
-      block2: 'Wir bringen Strategie und Design mit AI zum rocken!',
+      mainTitle: 'Die Venture-Schmiede.',
+      subtitle: 'Ohne die üblichen Corporate-Bremsen.',
+      block1: 'Schlüsselfertige Ventures.\nVon der ersten Idee bis zu echter Traktion.',
+      block2: 'Wir verwandeln ungenutztes Potenzial in euer nächstes Wachstumsfeld.',
       block3: 'Human\nCreativity\n&\nArtificial\nIntelligence',
     },
     angebot: {

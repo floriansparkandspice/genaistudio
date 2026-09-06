@@ -115,6 +115,9 @@ export class AdminController {
       const cloudConfig = await loadSiteConfigFromFirestore();
       if (cloudConfig) {
         this.config = JSON.parse(JSON.stringify(cloudConfig));
+        if (this.config.segments?.intro && typeof this.config.segments.intro.subtitle !== 'string') {
+          this.config.segments.intro.subtitle = DEFAULT_SITE_CONFIG.segments.intro.subtitle || '';
+        }
         applyTheme(this.config);
         renderSegments(this.config);
         renderTeam(this.config.team);
@@ -143,13 +146,11 @@ export class AdminController {
         </button>
 
         <div id="admin-user-profile" class="admin-user-profile" style="display: none;">
-          <img id="admin-user-avatar" class="admin-avatar" src="" alt="Avatar">
-          <span id="admin-user-name" class="admin-user-name"></span>
           <button id="btn-open-admin" class="admin-action-btn admin-open-btn" title="Admin Panel öffnen">
             ⚙️ Panel
           </button>
-          <button id="btn-admin-logout" class="admin-action-btn admin-logout-btn" title="Abmelden">
-            Abmelden
+          <button id="btn-admin-logout" class="admin-action-btn admin-logout-btn" title="Logout">
+            Logout
           </button>
         </div>
       </div>
@@ -249,8 +250,8 @@ export class AdminController {
       }
     });
 
-    // Logout
-    document.getElementById('btn-admin-logout')?.addEventListener('click', async () => {
+    // Logout handler for both bottom-left and navbar logout buttons
+    const handleLogout = async () => {
       try {
         await logoutUser();
         this.currentUser = null;
@@ -261,10 +262,16 @@ export class AdminController {
       } catch (err: any) {
         console.error('Logout error:', err);
       }
-    });
+    };
 
-    // Open/Close Drawer
+    document.getElementById('btn-admin-logout')?.addEventListener('click', handleLogout);
+    document.getElementById('nav-btn-admin-logout')?.addEventListener('click', handleLogout);
+
+    // Open/Close Drawer handlers
     document.getElementById('btn-open-admin')?.addEventListener('click', () => {
+      this.openDrawer();
+    });
+    document.getElementById('nav-btn-open-admin')?.addEventListener('click', () => {
       this.openDrawer();
     });
 
@@ -314,15 +321,13 @@ export class AdminController {
   private updateAuthUi() {
     const loginBtn = document.getElementById('btn-admin-login');
     const userProfile = document.getElementById('admin-user-profile');
-    const avatar = document.getElementById('admin-user-avatar') as HTMLImageElement;
-    const name = document.getElementById('admin-user-name');
+    const navAdminGroup = document.getElementById('nav-admin-group');
     const drawerOverlay = document.getElementById('admin-drawer-overlay');
 
     if (this.currentUser && this.isAdmin) {
       if (loginBtn) loginBtn.style.display = 'none';
       if (userProfile) userProfile.style.display = 'inline-flex';
-      if (avatar) avatar.src = this.currentUser.photoURL || '/images/favicon.png';
-      if (name) name.textContent = this.currentUser.displayName || this.currentUser.email || 'Admin';
+      if (navAdminGroup) navAdminGroup.style.display = 'inline-flex';
       if (drawerOverlay && this.isDrawerOpen) {
         drawerOverlay.style.display = 'flex';
         drawerOverlay.classList.add('open');
@@ -330,6 +335,7 @@ export class AdminController {
     } else {
       if (loginBtn) loginBtn.style.display = 'inline-flex';
       if (userProfile) userProfile.style.display = 'none';
+      if (navAdminGroup) navAdminGroup.style.display = 'none';
       if (drawerOverlay) {
         drawerOverlay.classList.remove('open');
         drawerOverlay.style.display = 'none';
@@ -677,8 +683,13 @@ export class AdminController {
         <h4 class="admin-section-title">Intro / Kreativmaschine (100vh Sticky Scrolltelling)</h4>
         
         <div class="form-group">
-          <label for="seg-intro-title">Linke Sticky Headline</label>
-          <textarea id="seg-intro-title" rows="3" class="form-textarea">${this.escape(seg.intro.mainTitle)}</textarea>
+          <label for="seg-intro-title">Linke Sticky Headline – Teil 1 (Haupttitel / Lime)</label>
+          <textarea id="seg-intro-title" rows="2" class="form-textarea">${this.escape(seg.intro.mainTitle)}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="seg-intro-subtitle">Linke Sticky Headline – Teil 2 (Zweittext / Styling wie rechte Blöcke)</label>
+          <textarea id="seg-intro-subtitle" rows="2" class="form-textarea">${this.escape(seg.intro.subtitle || '')}</textarea>
         </div>
 
         <div class="form-group">
@@ -698,17 +709,18 @@ export class AdminController {
       </div>
 
       <div class="admin-section">
-        <h4 class="admin-section-title">Angebot Sektion</h4>
+        <h4 class="admin-section-title">Angebot Sektion (100vh Pinned Scrolltelling)</h4>
+        <p class="admin-help-text">Die drei Textblöcke werden beim Scrollen nacheinander in der exakten Bildschirmmitte von 0% auf 100% und wieder auf 0% Opacity überblendet.</p>
         <div class="form-group">
-          <label for="seg-angebot-main">Hauptaussage Anfang</label>
+          <label for="seg-angebot-main">Text 1 (Erste Einblendung)</label>
           <input type="text" id="seg-angebot-main" class="form-input" value="${this.escape(seg.angebot.mainText)}">
         </div>
         <div class="form-group">
-          <label for="seg-angebot-highlight">Hervorgehobener Text (Highlight)</label>
+          <label for="seg-angebot-highlight">Text 2 (Zweite Einblendung – Hervorgehoben)</label>
           <input type="text" id="seg-angebot-highlight" class="form-input" value="${this.escape(seg.angebot.highlightText)}">
         </div>
         <div class="form-group">
-          <label for="seg-angebot-end">Hauptaussage Abschluss</label>
+          <label for="seg-angebot-end">Text 3 (Dritte Einblendung / Abschluss)</label>
           <input type="text" id="seg-angebot-end" class="form-input" value="${this.escape(seg.angebot.endText)}">
         </div>
       </div>
@@ -742,6 +754,7 @@ export class AdminController {
 
     bindInput('seg-hero-logo', (v) => (this.config.segments.hero.logoText = v));
     bindInput('seg-intro-title', (v) => (this.config.segments.intro.mainTitle = v));
+    bindInput('seg-intro-subtitle', (v) => (this.config.segments.intro.subtitle = v));
     bindInput('seg-intro-block1', (v) => (this.config.segments.intro.block1 = v));
     bindInput('seg-intro-block2', (v) => (this.config.segments.intro.block2 = v));
     bindInput('seg-intro-block3', (v) => (this.config.segments.intro.block3 = v));

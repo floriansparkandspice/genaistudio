@@ -40,14 +40,18 @@
   <header class="navbar" id="site-header">
     <nav class="nav-container" aria-label="Hauptnavigation">
       <a href="#home" class="logo-link" aria-label="GENAI STUDIO Home">
-        <svg width="32" height="32" viewBox="0 0 33 33" class="logo-icon" aria-hidden="true">
-          <path d="M28,0H5C2.24,0,0,2.24,0,5v23c0,2.76,2.24,5,5,5h23c2.76,0,5-2.24,5-5V5c0-2.76-2.24-5-5-5ZM29,17c-6.63,0-12,5.37-12,12h-1c0-6.63-5.37-12-12-12v-1c6.63,0,12-5.37,12-12h1c0,6.63,5.37,12,12,12v1Z" fill="currentColor"></path>
-        </svg>
+        <img src="/logos/Genai%20Studio%20Favicon%20deepindigo-radioactivelime.svg" alt="GENAI STUDIO" width="30" height="30" class="logo-icon" />
       </a>
       <a href="#home" class="nav-btn">Home</a>
       <a href="#angebot" class="nav-btn">Angebot</a>
       <a href="#team" class="nav-btn">Team</a>
       <a href="#kontakt" class="nav-btn nav-btn-highlight">Kontakt</a>
+
+      <!-- Admin Controls for Logged-In User in Navbar -->
+      <div id="nav-admin-group" class="nav-admin-group" style="display: none;">
+        <button id="nav-btn-open-admin" class="nav-btn nav-admin-btn-panel" type="button" title="Admin Panel öffnen">⚙️ Panel</button>
+        <button id="nav-btn-admin-logout" class="nav-btn nav-admin-btn-logout" type="button" title="Logout">Logout</button>
+      </div>
     </nav>
   </header>
 
@@ -61,7 +65,8 @@
     <section class="intro-section" id="intro">
       <div class="sticky-container">
         <div class="headline-col">
-          <h1 class="main-title">Die Kreativ-<br>maschine.<br>Ohne den ganzen Bullshit.</h1>
+          <h1 class="main-title">Die Venture-Schmiede.</h1>
+          <h2 class="main-subtitle">Ohne die üblichen Corporate-Bremsen.</h2>
         </div>
         <div class="content-col">
           <div class="message-block" id="story-block-1">
@@ -78,14 +83,20 @@
       </div>
     </section>
 
-    <!-- Angebot Section -->
+    <!-- Angebot Section (100vh Pinned Scrolltelling) -->
     <section id="angebot" class="value-section">
-      <div class="container">
-        <h2 class="value-statement reveal-on-scroll">
-          Grenzenloses Design, solide Strategie, schnelle KI-Umsetzung. 
-          <span class="highlight-text">Wir bringen dein Unternehmen voran.</span> 
-          Ohne Umwege, aber dafür mit weltklasse Resultaten.
-        </h2>
+      <div class="value-stage">
+        <div class="value-item value-item-1" id="value-item-1">
+          <h2 class="value-statement value-text-1">Grenzenloses Design, solide Strategie, schnelle KI-Umsetzung.</h2>
+        </div>
+        <div class="value-item value-item-2" id="value-item-2">
+          <h2 class="value-statement value-text-2">
+            <span class="highlight-text">Wir bringen dein Unternehmen voran.</span>
+          </h2>
+        </div>
+        <div class="value-item value-item-3" id="value-item-3">
+          <h2 class="value-statement value-text-3">Ohne Umwege, aber dafür mit weltklasse Resultaten.</h2>
+        </div>
       </div>
     </section>
 

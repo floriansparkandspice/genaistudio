@@ -133,26 +133,42 @@ function initIntroScrollTriggers() {
       .to(block, { opacity: 0, y: -30, duration: 4, ease: 'power1.in' });
   });
 
-  // C. Value Statement (#angebot)
-  const valueStatement = document.querySelector('.value-statement');
-  if (valueStatement) {
+  // C. Angebot Sektion (#angebot) – 100vh Pinned Scrolltelling
+  // Die 3 Texte sind absolut in der Bildschirmmitte zentriert.
+  // Beim Scrollen faden sie nacheinander ein (0% -> 100%), halten kurz und faden wieder aus (100% -> 0%) – ohne jede Bewegung.
+  const angebotSection = document.getElementById('angebot');
+  const item1 = document.querySelector('.value-item-1');
+  const item2 = document.querySelector('.value-item-2');
+  const item3 = document.querySelector('.value-item-3');
+
+  if (angebotSection && item1 && item2 && item3) {
+    gsap.set([item1, item2, item3], { opacity: 0 });
+
     const valueTl = gsap.timeline({
       scrollTrigger: {
-        trigger: valueStatement,
-        start: 'center bottom',
-        end: 'center top',
-        scrub: true,
+        trigger: angebotSection,
+        start: 'top top',
+        end: '+=240%',
+        pin: true,
+        scrub: 0.5,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
       },
     });
 
     valueTl
-      .fromTo(
-        valueStatement,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 4, ease: 'power1.out' }
-      )
-      .to(valueStatement, { opacity: 1, y: 0, duration: 2, ease: 'none' })
-      .to(valueStatement, { opacity: 0, y: -30, duration: 4, ease: 'power1.in' });
+      // 1. Text
+      .to(item1, { opacity: 1, duration: 1, ease: 'power1.inOut' })
+      .to(item1, { opacity: 1, duration: 1.5 })
+      .to(item1, { opacity: 0, duration: 1, ease: 'power1.inOut' })
+      // 2. Text (Highlight)
+      .to(item2, { opacity: 1, duration: 1, ease: 'power1.inOut' })
+      .to(item2, { opacity: 1, duration: 1.5 })
+      .to(item2, { opacity: 0, duration: 1, ease: 'power1.inOut' })
+      // 3. Text (Abschluss)
+      .to(item3, { opacity: 1, duration: 1, ease: 'power1.inOut' })
+      .to(item3, { opacity: 1, duration: 1.5 })
+      .to(item3, { opacity: 0, duration: 1, ease: 'power1.inOut' });
   }
 }
 

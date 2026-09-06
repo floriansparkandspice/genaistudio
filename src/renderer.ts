@@ -67,7 +67,12 @@ export function renderSegments(config: SiteConfig): void {
   // Intro
   const mainTitleEl = document.querySelector('.main-title');
   if (mainTitleEl) {
-    mainTitleEl.innerHTML = escapeHtml(seg.intro.mainTitle).replace(/\n/g, '<br>');
+    mainTitleEl.innerHTML = escapeHtml(seg.intro.mainTitle || '').replace(/\n/g, '<br>');
+  }
+
+  const mainSubtitleEl = document.querySelector('.main-subtitle');
+  if (mainSubtitleEl) {
+    mainSubtitleEl.innerHTML = escapeHtml(seg.intro.subtitle || '').replace(/\n/g, '<br>');
   }
 
   const block1Heading = document.querySelector('#story-block-1 h2, .intro-section .content-col .message-block:nth-of-type(1) h2');
@@ -85,18 +90,22 @@ export function renderSegments(config: SiteConfig): void {
     block3Heading.innerHTML = escapeHtml(seg.intro.block3).replace(/\n/g, '<br>');
   }
 
-  if (typeof (window as any).ScrollTrigger !== 'undefined') {
-    (window as any).ScrollTrigger.refresh();
+  // Angebot (3 zentrierte Texte für das 100vh Pinned Scrolltelling)
+  const val1El = document.querySelector('.value-text-1');
+  if (val1El) {
+    val1El.innerHTML = escapeHtml(seg.angebot.mainText || '').replace(/\n/g, '<br>');
+  }
+  const val2El = document.querySelector('.value-text-2');
+  if (val2El) {
+    val2El.innerHTML = `<span class="highlight-text">${escapeHtml(seg.angebot.highlightText || '').replace(/\n/g, '<br>')}</span>`;
+  }
+  const val3El = document.querySelector('.value-text-3');
+  if (val3El) {
+    val3El.innerHTML = escapeHtml(seg.angebot.endText || '').replace(/\n/g, '<br>');
   }
 
-  // Angebot
-  const valueStatementEl = document.querySelector('.value-statement');
-  if (valueStatementEl) {
-    valueStatementEl.innerHTML = `
-      ${escapeHtml(seg.angebot.mainText)}
-      <span class="highlight-text">${escapeHtml(seg.angebot.highlightText)}</span>
-      ${escapeHtml(seg.angebot.endText)}
-    `;
+  if (typeof (window as any).ScrollTrigger !== 'undefined') {
+    (window as any).ScrollTrigger.refresh();
   }
 
   // Kontakt

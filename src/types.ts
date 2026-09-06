@@ -37,6 +37,7 @@ export interface SegmentContent {
   };
   intro: {
     mainTitle: string;
+    subtitle?: string;
     block1: string;
     block2: string;
     block3: string;
