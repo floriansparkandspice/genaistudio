@@ -1,5 +1,5 @@
 import { User } from 'firebase/auth';
-import { SiteConfig, TeamMember, DetailItem, ThemeSettings } from './types';
+import { SiteConfig, TeamMember, DetailItem, ThemeSettings, IntroBlock, AngebotBlock } from './types';
 import {
   loginWithGoogle,
   logoutUser,
@@ -670,6 +670,44 @@ export class AdminController {
   private renderSegmentsTab(): string {
     const seg = this.config.segments;
 
+    const introBlocksHtml = (seg.intro.blocks || []).map((block, idx) => `
+      <div class="block-card-item" data-intro-idx="${idx}">
+        <div class="block-card-header">
+          <span class="block-card-badge">Block ${idx + 1}</span>
+          <div class="block-card-actions">
+            <button type="button" class="btn-move-item btn-intro-move-up" data-idx="${idx}" title="Nach oben verschieben" ${idx === 0 ? 'disabled' : ''}>▲</button>
+            <button type="button" class="btn-move-item btn-intro-move-down" data-idx="${idx}" title="Nach unten verschieben" ${idx === seg.intro.blocks.length - 1 ? 'disabled' : ''}>▼</button>
+            <button type="button" class="btn-remove-item btn-intro-block-delete" data-idx="${idx}" title="Block löschen">✕ Löschen</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom: 8px;">
+          <label for="intro-block-text-${idx}">Text (HTML / Zeilenumbrüche)</label>
+          <textarea id="intro-block-text-${idx}" class="form-textarea intro-block-text" data-idx="${idx}" rows="2">${this.escape(block.text)}</textarea>
+        </div>
+        <label class="block-animation-toggle">
+          <input type="checkbox" class="intro-block-anim" data-idx="${idx}" ${block.hasAnimation ? 'checked' : ''}>
+          <span>Generative Lottie-Animation im Hintergrund einblenden</span>
+        </label>
+      </div>
+    `).join('');
+
+    const angebotItemsHtml = (seg.angebot.items || []).map((item, idx) => `
+      <div class="block-card-item" data-angebot-idx="${idx}">
+        <div class="block-card-header">
+          <span class="block-card-badge">Statement ${idx + 1}</span>
+          <div class="block-card-actions">
+            <button type="button" class="btn-move-item btn-angebot-move-up" data-idx="${idx}" title="Nach oben verschieben" ${idx === 0 ? 'disabled' : ''}>▲</button>
+            <button type="button" class="btn-move-item btn-angebot-move-down" data-idx="${idx}" title="Nach unten verschieben" ${idx === seg.angebot.items.length - 1 ? 'disabled' : ''}>▼</button>
+            <button type="button" class="btn-remove-item btn-angebot-item-delete" data-idx="${idx}" title="Statement löschen">✕ Löschen</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <label for="angebot-item-text-${idx}">Statement-Text</label>
+          <textarea id="angebot-item-text-${idx}" class="form-textarea angebot-item-text" data-idx="${idx}" rows="2">${this.escape(item.text)}</textarea>
+        </div>
+      </div>
+    `).join('');
+
     return `
       <div class="admin-section">
         <h4 class="admin-section-title">Hero-Sektion</h4>
@@ -683,45 +721,38 @@ export class AdminController {
         <h4 class="admin-section-title">Intro / Kreativmaschine (100vh Sticky Scrolltelling)</h4>
         
         <div class="form-group">
-          <label for="seg-intro-title">Linke Sticky Headline – Teil 1 (Haupttitel / Lime)</label>
+          <label for="seg-intro-title">Linke Sticky Headline (Haupttitel / Lime)</label>
           <textarea id="seg-intro-title" rows="2" class="form-textarea">${this.escape(seg.intro.mainTitle)}</textarea>
         </div>
 
-        <div class="form-group">
-          <label for="seg-intro-subtitle">Linke Sticky Headline – Teil 2 (Zweittext / Styling wie rechte Blöcke)</label>
-          <textarea id="seg-intro-subtitle" rows="2" class="form-textarea">${this.escape(seg.intro.subtitle || '')}</textarea>
+        <div class="group-header-with-btn" style="margin-top: 20px;">
+          <div>
+            <label style="font-weight: 700; color: var(--white);">Rechte Story-Blöcke (100vh Segmente)</label>
+            <div class="admin-help-text" style="margin: 2px 0 0 0;">Jeder Block wird rechts als eigenes Segment nacheinander eingeblendet.</div>
+          </div>
+          <button type="button" id="btn-intro-block-add" class="admin-btn-primary" style="padding: 5px 12px; font-size: 0.8rem; white-space: nowrap;">
+            + Block hinzufügen
+          </button>
         </div>
 
-        <div class="form-group">
-          <label for="seg-intro-block1">Rechter Block 1</label>
-          <textarea id="seg-intro-block1" rows="2" class="form-textarea">${this.escape(seg.intro.block1)}</textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="seg-intro-block2">Rechter Block 2</label>
-          <textarea id="seg-intro-block2" rows="2" class="form-textarea">${this.escape(seg.intro.block2)}</textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="seg-intro-block3">Rechter Block 3 (über Lottie-Animation)</label>
-          <textarea id="seg-intro-block3" rows="3" class="form-textarea">${this.escape(seg.intro.block3)}</textarea>
+        <div class="block-cards-container" id="intro-blocks-container">
+          ${introBlocksHtml}
         </div>
       </div>
 
       <div class="admin-section">
-        <h4 class="admin-section-title">Angebot Sektion (100vh Pinned Scrolltelling)</h4>
-        <p class="admin-help-text">Die drei Textblöcke werden beim Scrollen nacheinander in der exakten Bildschirmmitte von 0% auf 100% und wieder auf 0% Opacity überblendet.</p>
-        <div class="form-group">
-          <label for="seg-angebot-main">Text 1 (Erste Einblendung)</label>
-          <input type="text" id="seg-angebot-main" class="form-input" value="${this.escape(seg.angebot.mainText)}">
+        <div class="group-header-with-btn">
+          <div>
+            <h4 class="admin-section-title" style="margin: 0;">Angebot Sektion (100vh Pinned Scrolltelling)</h4>
+            <p class="admin-help-text" style="margin: 4px 0 0 0;">Statements werden beim Scrollen nacheinander in der Bildschirmmitte ein- und überblendet.</p>
+          </div>
+          <button type="button" id="btn-angebot-item-add" class="admin-btn-primary" style="padding: 5px 12px; font-size: 0.8rem; white-space: nowrap;">
+            + Statement hinzufügen
+          </button>
         </div>
-        <div class="form-group">
-          <label for="seg-angebot-highlight">Text 2 (Zweite Einblendung)</label>
-          <input type="text" id="seg-angebot-highlight" class="form-input" value="${this.escape(seg.angebot.highlightText)}">
-        </div>
-        <div class="form-group">
-          <label for="seg-angebot-end">Text 3 (Dritte Einblendung / Abschluss)</label>
-          <input type="text" id="seg-angebot-end" class="form-input" value="${this.escape(seg.angebot.endText)}">
+
+        <div class="block-cards-container" id="angebot-items-container">
+          ${angebotItemsHtml}
         </div>
       </div>
 
@@ -744,6 +775,28 @@ export class AdminController {
   }
 
   private bindSegmentsEvents() {
+    const refreshDrawerKeepingScroll = () => {
+      const drawerBody = document.querySelector('.admin-drawer-body');
+      const scrollPos = drawerBody ? drawerBody.scrollTop : 0;
+      this.renderDrawerContent();
+      const newBody = document.querySelector('.admin-drawer-body');
+      if (newBody) newBody.scrollTop = scrollPos;
+    };
+
+    const syncIntroFallbacks = () => {
+      const b = this.config.segments.intro.blocks;
+      this.config.segments.intro.block1 = b[0]?.text || '';
+      this.config.segments.intro.block2 = b[1]?.text || '';
+      this.config.segments.intro.block3 = b[2]?.text || '';
+    };
+
+    const syncAngebotFallbacks = () => {
+      const it = this.config.segments.angebot.items;
+      this.config.segments.angebot.mainText = it[0]?.text || '';
+      this.config.segments.angebot.highlightText = it[1]?.text || '';
+      this.config.segments.angebot.endText = it[2]?.text || '';
+    };
+
     const bindInput = (id: string, updateFn: (val: string) => void) => {
       const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement;
       el?.addEventListener('input', (e) => {
@@ -754,15 +807,169 @@ export class AdminController {
 
     bindInput('seg-hero-logo', (v) => (this.config.segments.hero.logoText = v));
     bindInput('seg-intro-title', (v) => (this.config.segments.intro.mainTitle = v));
-    bindInput('seg-intro-subtitle', (v) => (this.config.segments.intro.subtitle = v));
-    bindInput('seg-intro-block1', (v) => (this.config.segments.intro.block1 = v));
-    bindInput('seg-intro-block2', (v) => (this.config.segments.intro.block2 = v));
-    bindInput('seg-intro-block3', (v) => (this.config.segments.intro.block3 = v));
 
-    bindInput('seg-angebot-main', (v) => (this.config.segments.angebot.mainText = v));
-    bindInput('seg-angebot-highlight', (v) => (this.config.segments.angebot.highlightText = v));
-    bindInput('seg-angebot-end', (v) => (this.config.segments.angebot.endText = v));
+    // Intro Blocks: Add Block
+    document.getElementById('btn-intro-block-add')?.addEventListener('click', () => {
+      const newBlock: IntroBlock = {
+        id: `intro-${Date.now()}`,
+        text: 'Neuer Story-Block...',
+        hasAnimation: false,
+      };
+      this.config.segments.intro.blocks.push(newBlock);
+      syncIntroFallbacks();
+      renderSegments(this.config);
+      refreshDrawerKeepingScroll();
+      this.showToast('Neuer Intro-Block hinzugefügt', 'info');
+    });
 
+    // Intro Blocks: Text Inputs
+    document.querySelectorAll('.intro-block-text').forEach((el) => {
+      el.addEventListener('input', (e) => {
+        const target = e.target as HTMLTextAreaElement;
+        const idx = parseInt(target.getAttribute('data-idx') || '0', 10);
+        if (this.config.segments.intro.blocks[idx]) {
+          this.config.segments.intro.blocks[idx].text = target.value;
+          syncIntroFallbacks();
+          renderSegments(this.config);
+        }
+      });
+    });
+
+    // Intro Blocks: Animation Checkbox
+    document.querySelectorAll('.intro-block-anim').forEach((el) => {
+      el.addEventListener('change', (e) => {
+        const target = e.target as HTMLInputElement;
+        const idx = parseInt(target.getAttribute('data-idx') || '0', 10);
+        if (this.config.segments.intro.blocks[idx]) {
+          this.config.segments.intro.blocks[idx].hasAnimation = target.checked;
+          renderSegments(this.config);
+        }
+      });
+    });
+
+    // Intro Blocks: Move Up
+    document.querySelectorAll('.btn-intro-move-up').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-idx') || '0', 10);
+        if (idx > 0) {
+          const blocks = this.config.segments.intro.blocks;
+          const temp = blocks[idx];
+          blocks[idx] = blocks[idx - 1];
+          blocks[idx - 1] = temp;
+          syncIntroFallbacks();
+          renderSegments(this.config);
+          refreshDrawerKeepingScroll();
+        }
+      });
+    });
+
+    // Intro Blocks: Move Down
+    document.querySelectorAll('.btn-intro-move-down').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-idx') || '0', 10);
+        const blocks = this.config.segments.intro.blocks;
+        if (idx < blocks.length - 1) {
+          const temp = blocks[idx];
+          blocks[idx] = blocks[idx + 1];
+          blocks[idx + 1] = temp;
+          syncIntroFallbacks();
+          renderSegments(this.config);
+          refreshDrawerKeepingScroll();
+        }
+      });
+    });
+
+    // Intro Blocks: Delete
+    document.querySelectorAll('.btn-intro-block-delete').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-idx') || '0', 10);
+        if (this.config.segments.intro.blocks.length <= 1) {
+          this.showToast('Es muss mindestens ein Block im Intro vorhanden sein.', 'error');
+          return;
+        }
+        this.config.segments.intro.blocks.splice(idx, 1);
+        syncIntroFallbacks();
+        renderSegments(this.config);
+        refreshDrawerKeepingScroll();
+        this.showToast('Block gelöscht', 'info');
+      });
+    });
+
+    // Angebot Items: Add Statement
+    document.getElementById('btn-angebot-item-add')?.addEventListener('click', () => {
+      const newItem: AngebotBlock = {
+        id: `angebot-${Date.now()}`,
+        text: 'Neues Statement...',
+      };
+      this.config.segments.angebot.items.push(newItem);
+      syncAngebotFallbacks();
+      renderSegments(this.config);
+      refreshDrawerKeepingScroll();
+      this.showToast('Neues Statement hinzugefügt', 'info');
+    });
+
+    // Angebot Items: Text Inputs
+    document.querySelectorAll('.angebot-item-text').forEach((el) => {
+      el.addEventListener('input', (e) => {
+        const target = e.target as HTMLTextAreaElement;
+        const idx = parseInt(target.getAttribute('data-idx') || '0', 10);
+        if (this.config.segments.angebot.items[idx]) {
+          this.config.segments.angebot.items[idx].text = target.value;
+          syncAngebotFallbacks();
+          renderSegments(this.config);
+        }
+      });
+    });
+
+    // Angebot Items: Move Up
+    document.querySelectorAll('.btn-angebot-move-up').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-idx') || '0', 10);
+        if (idx > 0) {
+          const items = this.config.segments.angebot.items;
+          const temp = items[idx];
+          items[idx] = items[idx - 1];
+          items[idx - 1] = temp;
+          syncAngebotFallbacks();
+          renderSegments(this.config);
+          refreshDrawerKeepingScroll();
+        }
+      });
+    });
+
+    // Angebot Items: Move Down
+    document.querySelectorAll('.btn-angebot-move-down').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-idx') || '0', 10);
+        const items = this.config.segments.angebot.items;
+        if (idx < items.length - 1) {
+          const temp = items[idx];
+          items[idx] = items[idx + 1];
+          items[idx + 1] = temp;
+          syncAngebotFallbacks();
+          renderSegments(this.config);
+          refreshDrawerKeepingScroll();
+        }
+      });
+    });
+
+    // Angebot Items: Delete
+    document.querySelectorAll('.btn-angebot-item-delete').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-idx') || '0', 10);
+        if (this.config.segments.angebot.items.length <= 1) {
+          this.showToast('Es muss mindestens ein Statement im Angebot vorhanden sein.', 'error');
+          return;
+        }
+        this.config.segments.angebot.items.splice(idx, 1);
+        syncAngebotFallbacks();
+        renderSegments(this.config);
+        refreshDrawerKeepingScroll();
+        this.showToast('Statement gelöscht', 'info');
+      });
+    });
+
+    // Kontakt
     bindInput('seg-kontakt-lead', (v) => (this.config.segments.kontakt.leadText = v));
     bindInput('seg-kontakt-phone', (v) => (this.config.segments.kontakt.phoneNumber = v));
     bindInput('seg-kontakt-href', (v) => (this.config.segments.kontakt.phoneHref = v));

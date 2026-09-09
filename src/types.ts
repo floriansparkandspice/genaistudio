@@ -31,6 +31,17 @@ export interface TeamMember {
   linkedinUrl: string;
 }
 
+export interface IntroBlock {
+  id: string;
+  text: string;
+  hasAnimation?: boolean;
+}
+
+export interface AngebotBlock {
+  id: string;
+  text: string;
+}
+
 export interface SegmentContent {
   hero: {
     logoText: string;
@@ -38,14 +49,16 @@ export interface SegmentContent {
   intro: {
     mainTitle: string;
     subtitle?: string;
-    block1: string;
-    block2: string;
-    block3: string;
+    blocks: IntroBlock[];
+    block1?: string;
+    block2?: string;
+    block3?: string;
   };
   angebot: {
-    mainText: string;
-    highlightText: string;
-    endText: string;
+    items: AngebotBlock[];
+    mainText?: string;
+    highlightText?: string;
+    endText?: string;
   };
   kontakt: {
     leadText: string;

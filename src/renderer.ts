@@ -70,41 +70,47 @@ export function renderSegments(config: SiteConfig): void {
     mainTitleEl.innerHTML = escapeHtml(seg.intro.mainTitle || '').replace(/\n/g, '<br>');
   }
 
+  // Falls der Subtitle noch im DOM vorhanden war, entfernen
   const mainSubtitleEl = document.querySelector('.main-subtitle');
   if (mainSubtitleEl) {
-    mainSubtitleEl.innerHTML = escapeHtml(seg.intro.subtitle || '').replace(/\n/g, '<br>');
+    mainSubtitleEl.remove();
   }
 
-  const block1Heading = document.querySelector('#story-block-1 h2, .intro-section .content-col .message-block:nth-of-type(1) h2');
-  if (block1Heading) {
-    block1Heading.innerHTML = escapeHtml(seg.intro.block1).replace(/\n/g, '<br>');
+  // Rechte Story-Blöcke dynamisch rendern
+  const introCol = document.getElementById('intro-content-col') || document.querySelector('.intro-section .content-col');
+  if (introCol && Array.isArray(seg.intro.blocks) && seg.intro.blocks.length > 0) {
+    introCol.innerHTML = seg.intro.blocks.map((block, idx) => {
+      const animClass = block.hasAnimation ? ' message-block-animation' : '';
+      const animHtml = block.hasAnimation
+        ? '<div id="lottie-container" class="lottie-animation" aria-hidden="true"></div>'
+        : '';
+      return `
+        <div class="message-block${animClass}" id="story-block-${idx + 1}">
+          ${animHtml}
+          <h2>${escapeHtml(block.text).replace(/\n/g, '<br>')}</h2>
+        </div>
+      `;
+    }).join('');
+
+    if (typeof (window as any).initLottie === 'function') {
+      (window as any).initLottie();
+    }
   }
 
-  const block2Heading = document.querySelector('#story-block-2 h2, .intro-section .content-col .message-block:nth-of-type(2) h2');
-  if (block2Heading) {
-    block2Heading.innerHTML = escapeHtml(seg.intro.block2).replace(/\n/g, '<br>');
+  // Angebot (100vh Pinned Scrolltelling Statements dynamisch rendern)
+  const valueStage = document.getElementById('value-stage') || document.querySelector('.value-section .value-stage');
+  if (valueStage && Array.isArray(seg.angebot.items) && seg.angebot.items.length > 0) {
+    valueStage.innerHTML = seg.angebot.items.map((item, idx) => `
+      <div class="value-item value-item-${idx}" id="value-item-${idx + 1}">
+        <h2 class="value-statement value-text-${idx + 1}">${escapeHtml(item.text).replace(/\n/g, '<br>')}</h2>
+      </div>
+    `).join('');
   }
 
-  const block3Heading = document.querySelector('#story-block-3 h2, .intro-section .content-col .message-block:nth-of-type(3) h2');
-  if (block3Heading) {
-    block3Heading.innerHTML = escapeHtml(seg.intro.block3).replace(/\n/g, '<br>');
-  }
-
-  // Angebot (3 zentrierte Texte für das 100vh Pinned Scrolltelling)
-  const val1El = document.querySelector('.value-text-1');
-  if (val1El) {
-    val1El.innerHTML = escapeHtml(seg.angebot.mainText || '').replace(/\n/g, '<br>');
-  }
-  const val2El = document.querySelector('.value-text-2');
-  if (val2El) {
-    val2El.innerHTML = escapeHtml(seg.angebot.highlightText || '').replace(/\n/g, '<br>');
-  }
-  const val3El = document.querySelector('.value-text-3');
-  if (val3El) {
-    val3El.innerHTML = escapeHtml(seg.angebot.endText || '').replace(/\n/g, '<br>');
-  }
-
-  if (typeof (window as any).ScrollTrigger !== 'undefined') {
+  // Re-initialisiere ScrollTrigger für Intro & Angebot
+  if (typeof (window as any).initIntroScrollTriggers === 'function' && (window as any).gsapInitialized) {
+    (window as any).initIntroScrollTriggers();
+  } else if (typeof (window as any).ScrollTrigger !== 'undefined') {
     (window as any).ScrollTrigger.refresh();
   }
 

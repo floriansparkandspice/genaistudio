@@ -1679,6 +1679,97 @@ h4 {
   gap: 6px;
 }
 
+/* Dynamic Content Block Cards (Intro & Angebot) */
+.block-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.block-card-item {
+  background: #04101e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color var(--transition-fast);
+}
+
+.block-card-item:hover {
+  border-color: rgba(204, 255, 0, 0.35);
+}
+
+.block-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.block-card-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--radioactive-lime);
+  background: rgba(204, 255, 0, 0.12);
+  border: 1px solid rgba(204, 255, 0, 0.25);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.block-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-move-item {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--white);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  transition: all var(--transition-fast);
+  line-height: 1;
+}
+
+.btn-move-item:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--radioactive-lime);
+  border-color: var(--radioactive-lime);
+}
+
+.btn-move-item:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.block-animation-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--steel-silver);
+  cursor: pointer;
+  user-select: none;
+}
+
+.block-animation-toggle input[type="checkbox"] {
+  accent-color: var(--radioactive-lime);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.block-animation-toggle:hover {
+  color: var(--white);
+}
+
 .editor-bottom-actions {
   margin-top: 24px;
   padding-top: 16px;

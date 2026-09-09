@@ -1,4 +1,4 @@
-import { SiteConfig } from './types';
+import { SiteConfig, IntroBlock, AngebotBlock } from './types';
 
 export const DEFAULT_SITE_CONFIG: SiteConfig = {
   theme: {
@@ -21,12 +21,43 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     },
     intro: {
       mainTitle: 'Die Venture-Schmiede.',
-      subtitle: 'Ohne die üblichen Corporate-Bremsen.',
+      subtitle: '',
+      blocks: [
+        {
+          id: 'intro-1',
+          text: 'Schlüsselfertige Ventures.\nVon der ersten Idee bis zu echter Traktion.',
+          hasAnimation: false,
+        },
+        {
+          id: 'intro-2',
+          text: 'Wir verwandeln ungenutztes Potenzial in euer nächstes Wachstumsfeld.',
+          hasAnimation: false,
+        },
+        {
+          id: 'intro-3',
+          text: 'Human\nCreativity\n&\nArtificial\nIntelligence',
+          hasAnimation: true,
+        },
+      ],
       block1: 'Schlüsselfertige Ventures.\nVon der ersten Idee bis zu echter Traktion.',
       block2: 'Wir verwandeln ungenutztes Potenzial in euer nächstes Wachstumsfeld.',
       block3: 'Human\nCreativity\n&\nArtificial\nIntelligence',
     },
     angebot: {
+      items: [
+        {
+          id: 'angebot-1',
+          text: 'Grenzenloses Design, solide Strategie, schnelle KI-Umsetzung.',
+        },
+        {
+          id: 'angebot-2',
+          text: 'Wir bringen dein Unternehmen voran.',
+        },
+        {
+          id: 'angebot-3',
+          text: 'Ohne Umwege, aber dafür mit weltklasse Resultaten.',
+        },
+      ],
       mainText: 'Grenzenloses Design, solide Strategie, schnelle KI-Umsetzung.',
       highlightText: 'Wir bringen dein Unternehmen voran.',
       endText: 'Ohne Umwege, aber dafür mit weltklasse Resultaten.',
@@ -108,3 +139,90 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     },
   ],
 };
+
+export function normalizeSiteConfig(raw: any): SiteConfig {
+  if (!raw || typeof raw !== 'object') return JSON.parse(JSON.stringify(DEFAULT_SITE_CONFIG));
+
+  const config: SiteConfig = {
+    ...DEFAULT_SITE_CONFIG,
+    ...raw,
+    theme: { ...DEFAULT_SITE_CONFIG.theme, ...(raw.theme || {}) },
+    segments: {
+      ...DEFAULT_SITE_CONFIG.segments,
+      ...(raw.segments || {}),
+      hero: { ...DEFAULT_SITE_CONFIG.segments.hero, ...(raw.segments?.hero || {}) },
+      kontakt: { ...DEFAULT_SITE_CONFIG.segments.kontakt, ...(raw.segments?.kontakt || {}) },
+    },
+    team: Array.isArray(raw.team) && raw.team.length > 0 ? raw.team : DEFAULT_SITE_CONFIG.team,
+  };
+
+  // Normalisiere Intro-Blöcke
+  const rawIntro = raw.segments?.intro || {};
+  let introBlocks: IntroBlock[] = [];
+  if (Array.isArray(rawIntro.blocks) && rawIntro.blocks.length > 0) {
+    introBlocks = rawIntro.blocks.map((b: any, idx: number) => {
+      if (typeof b === 'string') {
+        return { id: `intro-${idx + 1}`, text: b, hasAnimation: idx === rawIntro.blocks.length - 1 };
+      }
+      return {
+        id: b.id || `intro-${idx + 1}`,
+        text: b.text || '',
+        hasAnimation: !!b.hasAnimation,
+      };
+    });
+  } else {
+    const legacyBlocks = [rawIntro.block1, rawIntro.block2, rawIntro.block3].filter(Boolean);
+    if (legacyBlocks.length > 0) {
+      introBlocks = legacyBlocks.map((txt: string, idx: number) => ({
+        id: `intro-${idx + 1}`,
+        text: txt,
+        hasAnimation: idx === legacyBlocks.length - 1,
+      }));
+    } else {
+      introBlocks = JSON.parse(JSON.stringify(DEFAULT_SITE_CONFIG.segments.intro.blocks));
+    }
+  }
+
+  config.segments.intro = {
+    mainTitle: rawIntro.mainTitle || DEFAULT_SITE_CONFIG.segments.intro.mainTitle,
+    subtitle: rawIntro.subtitle || '',
+    blocks: introBlocks,
+    block1: introBlocks[0]?.text || '',
+    block2: introBlocks[1]?.text || '',
+    block3: introBlocks[2]?.text || '',
+  };
+
+  // Normalisiere Angebot-Statements
+  const rawAngebot = raw.segments?.angebot || {};
+  let angebotItems: AngebotBlock[] = [];
+  if (Array.isArray(rawAngebot.items) && rawAngebot.items.length > 0) {
+    angebotItems = rawAngebot.items.map((it: any, idx: number) => {
+      if (typeof it === 'string') {
+        return { id: `angebot-${idx + 1}`, text: it };
+      }
+      return {
+        id: it.id || `angebot-${idx + 1}`,
+        text: it.text || '',
+      };
+    });
+  } else {
+    const legacyAngebot = [rawAngebot.mainText, rawAngebot.highlightText, rawAngebot.endText].filter(Boolean);
+    if (legacyAngebot.length > 0) {
+      angebotItems = legacyAngebot.map((txt: string, idx: number) => ({
+        id: `angebot-${idx + 1}`,
+        text: txt,
+      }));
+    } else {
+      angebotItems = JSON.parse(JSON.stringify(DEFAULT_SITE_CONFIG.segments.angebot.items));
+    }
+  }
+
+  config.segments.angebot = {
+    items: angebotItems,
+    mainText: angebotItems[0]?.text || '',
+    highlightText: angebotItems[1]?.text || '',
+    endText: angebotItems[2]?.text || '',
+  };
+
+  return config;
+}

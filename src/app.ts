@@ -91,10 +91,26 @@ export function initTeamScrollTriggers() {
 (window as any).initTeamScrollTriggers = initTeamScrollTriggers;
 (window as any).gsapInitialized = false;
 
-function initIntroScrollTriggers() {
+export function initIntroScrollTriggers() {
   if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
 
-  // A. Texte oben im Intro ("Die Kreativmaschine. Ohne den ganzen Bullshit.")
+  // Sauberes Aufräumen bestehender Trigger für Intro und Angebot
+  ScrollTrigger.getAll().forEach((st: any) => {
+    const triggerEl = st.trigger;
+    if (
+      triggerEl &&
+      (triggerEl.classList?.contains('intro-section') ||
+       triggerEl.classList?.contains('message-block') ||
+       triggerEl.closest?.('.intro-section') ||
+       triggerEl.id === 'angebot' ||
+       triggerEl.classList?.contains('value-section') ||
+       triggerEl.closest?.('#angebot'))
+    ) {
+      st.kill(true);
+    }
+  });
+
+  // A. Texte links im Intro ("Die Venture-Schmiede.")
   const headline = document.querySelector('.intro-section .headline-col');
   const introSection = document.querySelector('.intro-section');
   if (headline && introSection) {
@@ -139,21 +155,20 @@ function initIntroScrollTriggers() {
   });
 
   // C. Angebot Sektion (#angebot) – 100vh Pinned Scrolltelling
-  // Die 3 Texte sind absolut in der Bildschirmmitte zentriert.
-  // Beim Scrollen faden sie nacheinander ein (0% -> 100%), halten kurz und faden wieder aus (100% -> 0%) – ohne jede Bewegung.
+  // Dynamisch für N Statements zentriert in der Bildschirmmitte!
   const angebotSection = document.getElementById('angebot');
-  const item1 = document.querySelector('.value-item-1');
-  const item2 = document.querySelector('.value-item-2');
-  const item3 = document.querySelector('.value-item-3');
+  const items = gsap.utils.toArray('#angebot .value-item');
 
-  if (angebotSection && item1 && item2 && item3) {
-    gsap.set([item1, item2, item3], { opacity: 0 });
+  if (angebotSection && items.length > 0) {
+    gsap.set(items, { opacity: 0 });
+
+    const scrollDistance = Math.max(160, items.length * 90);
 
     const valueTl = gsap.timeline({
       scrollTrigger: {
         trigger: angebotSection,
         start: 'top top',
-        end: '+=240%',
+        end: `+=${scrollDistance}%`,
         pin: true,
         scrub: 0.5,
         anticipatePin: 1,
@@ -161,38 +176,18 @@ function initIntroScrollTriggers() {
       },
     });
 
-    valueTl
-      // 1. Text
-      .to(item1, { opacity: 1, duration: 1, ease: 'power1.inOut' })
-      .to(item1, { opacity: 1, duration: 1.5 })
-      .to(item1, { opacity: 0, duration: 1, ease: 'power1.inOut' })
-      // 2. Text (Highlight)
-      .to(item2, { opacity: 1, duration: 1, ease: 'power1.inOut' })
-      .to(item2, { opacity: 1, duration: 1.5 })
-      .to(item2, { opacity: 0, duration: 1, ease: 'power1.inOut' })
-      // 3. Text (Abschluss)
-      .to(item3, { opacity: 1, duration: 1, ease: 'power1.inOut' })
-      .to(item3, { opacity: 1, duration: 1.5 })
-      .to(item3, { opacity: 0, duration: 1, ease: 'power1.inOut' });
-  }
-}
-
-function initGsap() {
-  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  if (!gsapInitialized) {
-    initIntroScrollTriggers();
-    gsapInitialized = true;
-    (window as any).gsapInitialized = true;
+    items.forEach((item: any) => {
+      valueTl
+        .to(item, { opacity: 1, duration: 1, ease: 'power1.inOut' })
+        .to(item, { opacity: 1, duration: 1.5 })
+        .to(item, { opacity: 0, duration: 1, ease: 'power1.inOut' });
+    });
   }
 
-  // Team 100vh Segmente und Team-Fotos Scrolltelling
-  initTeamScrollTriggers();
+  ScrollTrigger.refresh();
 }
 
-function initLottie() {
+export function initLottie() {
   const lottieTarget = document.getElementById('lottie-container');
   if (!lottieTarget) return;
 
@@ -224,6 +219,24 @@ function initLottie() {
     }, 50);
     setTimeout(() => clearInterval(interval), 4000);
   }
+}
+
+(window as any).initIntroScrollTriggers = initIntroScrollTriggers;
+(window as any).initLottie = initLottie;
+
+function initGsap() {
+  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  if (!gsapInitialized) {
+    initIntroScrollTriggers();
+    gsapInitialized = true;
+    (window as any).gsapInitialized = true;
+  }
+
+  // Team 100vh Segmente und Team-Fotos Scrolltelling
+  initTeamScrollTriggers();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

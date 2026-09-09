@@ -21,7 +21,7 @@ import {
   getDownloadURL,
 } from 'firebase/storage';
 import { SiteConfig } from './types';
-import { DEFAULT_SITE_CONFIG } from './defaultData';
+import { DEFAULT_SITE_CONFIG, normalizeSiteConfig } from './defaultData';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyC1-9CFyVzfrXfXlPscs9UQ5so7AcAArLI",
@@ -137,13 +137,7 @@ export async function loadSiteConfigFromFirestore(): Promise<SiteConfig | null> 
     }
     if (docSnap.exists()) {
       const cloudData = docSnap.data() as Partial<SiteConfig>;
-      const merged: SiteConfig = {
-        ...DEFAULT_SITE_CONFIG,
-        ...cloudData,
-        theme: { ...DEFAULT_SITE_CONFIG.theme, ...cloudData.theme },
-        segments: { ...DEFAULT_SITE_CONFIG.segments, ...cloudData.segments },
-        team: Array.isArray(cloudData.team) && cloudData.team.length ? cloudData.team : DEFAULT_SITE_CONFIG.team,
-      };
+      const merged = normalizeSiteConfig(cloudData);
       saveLocalConfig(merged);
       return merged;
     }
@@ -162,18 +156,12 @@ export function loadLocalConfig(): SiteConfig {
     const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      return {
-        ...DEFAULT_SITE_CONFIG,
-        ...parsed,
-        theme: { ...DEFAULT_SITE_CONFIG.theme, ...parsed.theme },
-        segments: { ...DEFAULT_SITE_CONFIG.segments, ...parsed.segments },
-        team: Array.isArray(parsed.team) && parsed.team.length ? parsed.team : DEFAULT_SITE_CONFIG.team,
-      };
+      return normalizeSiteConfig(parsed);
     }
   } catch (err) {
     console.warn('Could not read from local storage:', err);
   }
-  return DEFAULT_SITE_CONFIG;
+  return JSON.parse(JSON.stringify(DEFAULT_SITE_CONFIG));
 }
 
 export function saveLocalConfig(config: SiteConfig): void {
@@ -201,13 +189,7 @@ export function subscribeToSiteConfig(
       (docSnap) => {
         if (docSnap.exists()) {
           const cloudData = docSnap.data() as Partial<SiteConfig>;
-          const merged: SiteConfig = {
-            ...DEFAULT_SITE_CONFIG,
-            ...cloudData,
-            theme: { ...DEFAULT_SITE_CONFIG.theme, ...cloudData.theme },
-            segments: { ...DEFAULT_SITE_CONFIG.segments, ...cloudData.segments },
-            team: Array.isArray(cloudData.team) && cloudData.team.length ? cloudData.team : DEFAULT_SITE_CONFIG.team,
-          };
+          const merged = normalizeSiteConfig(cloudData);
           saveLocalConfig(merged);
           onConfigUpdated(merged);
         } else {
